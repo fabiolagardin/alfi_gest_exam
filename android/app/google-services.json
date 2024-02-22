@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "672732676920",
+    "project_id": "alfi-gestionale",
+    "storage_bucket": "alfi-gestionale.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:672732676920:android:b6387c51abcfe4542737cd",
+        "android_client_info": {
+          "package_name": "com.example.alfi_gest"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDHwVvQDv3gGnTnm9OlohtlzTLFucOuWw4"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
