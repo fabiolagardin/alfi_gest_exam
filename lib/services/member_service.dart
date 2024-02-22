@@ -74,7 +74,7 @@ class MemberService {
     final member =
         await functions.httpsCallable('getMember').call({'memberId': uid});
     var existing = member.data as Map<String, dynamic>;
-    if (!existing.containsValue("Member not found")) {
+    if (!existing.containsValue("Socia* non trovata")) {
       return Result(valid: false, error: "Socio già esitente");
     }
 

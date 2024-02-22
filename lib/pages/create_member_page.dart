@@ -320,8 +320,14 @@ class CreateMemberPageState extends ConsumerState<CreateMemberPage> {
                                       filled: true,
                                       border: InputBorder.none,
                                     ),
-                                    style:
-                                        Theme.of(context).textTheme.bodyMedium,
+                                    style: Theme.of(context)
+                                        .textTheme
+                                        .bodyMedium!
+                                        .copyWith(
+                                          color: Theme.of(context)
+                                              .colorScheme
+                                              .secondary,
+                                        ),
                                     keyboardType: TextInputType.name,
                                     autocorrect: false,
                                     onChanged: (value) {
@@ -375,8 +381,14 @@ class CreateMemberPageState extends ConsumerState<CreateMemberPage> {
                                       filled: true,
                                       border: InputBorder.none,
                                     ),
-                                    style:
-                                        Theme.of(context).textTheme.bodyMedium,
+                                    style: Theme.of(context)
+                                        .textTheme
+                                        .bodyMedium!
+                                        .copyWith(
+                                          color: Theme.of(context)
+                                              .colorScheme
+                                              .secondary,
+                                        ),
                                     keyboardType: TextInputType.name,
                                     autocorrect: false,
                                     onChanged: (value) {
@@ -535,10 +547,17 @@ class CreateMemberPageState extends ConsumerState<CreateMemberPage> {
                                         ),
                                         labelStyle: TextStyle(
                                           color: Theme.of(context)
+                                              .colorScheme
+                                              .secondary
+                                              .withOpacity(1.0),
+                                          fontWeight: Theme.of(context)
                                               .textTheme
                                               .bodyMedium
-                                              ?.color
-                                              ?.withOpacity(1.0),
+                                              ?.fontWeight,
+                                          fontSize: Theme.of(context)
+                                              .textTheme
+                                              .bodyMedium
+                                              ?.fontSize,
                                         ),
                                         fillColor: Theme.of(context)
                                             .colorScheme
@@ -548,7 +567,12 @@ class CreateMemberPageState extends ConsumerState<CreateMemberPage> {
                                       enabled: false,
                                       style: Theme.of(context)
                                           .textTheme
-                                          .bodyMedium,
+                                          .bodyMedium!
+                                          .copyWith(
+                                            color: Theme.of(context)
+                                                .colorScheme
+                                                .secondary,
+                                          ),
                                     ),
                                   ),
                                   const SizedBox(height: 11),
@@ -601,8 +625,9 @@ class CreateMemberPageState extends ConsumerState<CreateMemberPage> {
                                                 .format(pickedDate);
                                       }
                                     },
-                                    style:
-                                        Theme.of(context).textTheme.bodyMedium,
+                                      style: Theme.of(context).textTheme.bodyMedium!.copyWith(
+                    color: Theme.of(context).colorScheme.secondary,
+                  ),
                                     validator: (value) {
                                       if (value == null ||
                                           value.trim().isEmpty) {
@@ -622,8 +647,14 @@ class CreateMemberPageState extends ConsumerState<CreateMemberPage> {
                                       filled: true,
                                       border: InputBorder.none,
                                     ),
-                                    style:
-                                        Theme.of(context).textTheme.bodyMedium,
+                                    style: Theme.of(context)
+                                        .textTheme
+                                        .bodyMedium!
+                                        .copyWith(
+                                          color: Theme.of(context)
+                                              .colorScheme
+                                              .secondary,
+                                        ),
                                     keyboardType: TextInputType.text,
                                     textCapitalization:
                                         TextCapitalization.characters,
@@ -643,7 +674,7 @@ class CreateMemberPageState extends ConsumerState<CreateMemberPage> {
                                       showModalBottomSheet(
                                         context: context,
                                         barrierLabel:
-                                            "Seleziona il tipo di documento",
+                                            "Seleziona il documento",
                                         shape: const RoundedRectangleBorder(
                                           borderRadius: BorderRadius.only(
                                             topLeft: Radius.circular(20),
@@ -678,7 +709,7 @@ class CreateMemberPageState extends ConsumerState<CreateMemberPage> {
                                                             right:
                                                                 48.0), // Consider the leading space
                                                         child: Text(
-                                                          "Seleziona il tipo di documento",
+                                                          "Seleziona il documento",
                                                         ),
                                                       ),
                                                     ),
@@ -779,10 +810,17 @@ class CreateMemberPageState extends ConsumerState<CreateMemberPage> {
                                         ),
                                         labelStyle: TextStyle(
                                           color: Theme.of(context)
+                                              .colorScheme
+                                              .secondary
+                                              .withOpacity(1.0),
+                                          fontWeight: Theme.of(context)
                                               .textTheme
                                               .bodyMedium
-                                              ?.color
-                                              ?.withOpacity(1.0),
+                                              ?.fontWeight,
+                                          fontSize: Theme.of(context)
+                                              .textTheme
+                                              .bodyMedium
+                                              ?.fontSize,
                                         ),
                                         fillColor: Theme.of(context)
                                             .colorScheme
@@ -792,7 +830,12 @@ class CreateMemberPageState extends ConsumerState<CreateMemberPage> {
                                       enabled: false,
                                       style: Theme.of(context)
                                           .textTheme
-                                          .bodyMedium,
+                                          .bodyMedium!
+                                          .copyWith(
+                                            color: Theme.of(context)
+                                                .colorScheme
+                                                .secondary,
+                                          ),
                                       validator: (value) {
                                         if (value == '') {
                                           return 'Campo obbligatorio!';
@@ -812,8 +855,14 @@ class CreateMemberPageState extends ConsumerState<CreateMemberPage> {
                                       filled: true,
                                       border: InputBorder.none,
                                     ),
-                                    style:
-                                        Theme.of(context).textTheme.bodyMedium,
+                                    style: Theme.of(context)
+                                        .textTheme
+                                        .bodyMedium!
+                                        .copyWith(
+                                          color: Theme.of(context)
+                                              .colorScheme
+                                              .secondary,
+                                        ),
                                     keyboardType: TextInputType.text,
                                     textCapitalization:
                                         TextCapitalization.characters,
@@ -854,7 +903,14 @@ class CreateMemberPageState extends ConsumerState<CreateMemberPage> {
                                     filled: true,
                                     border: InputBorder.none,
                                   ),
-                                  style: Theme.of(context).textTheme.bodyMedium,
+                                  style: Theme.of(context)
+                                      .textTheme
+                                      .bodyMedium!
+                                      .copyWith(
+                                        color: Theme.of(context)
+                                            .colorScheme
+                                            .secondary,
+                                      ),
 
                                   keyboardType: TextInputType.streetAddress,
                                   autocorrect: false,
@@ -877,7 +933,14 @@ class CreateMemberPageState extends ConsumerState<CreateMemberPage> {
                                     filled: true,
                                     border: InputBorder.none,
                                   ),
-                                  style: Theme.of(context).textTheme.bodyMedium,
+                                  style: Theme.of(context)
+                                      .textTheme
+                                      .bodyMedium!
+                                      .copyWith(
+                                        color: Theme.of(context)
+                                            .colorScheme
+                                            .secondary,
+                                      ),
 
                                   keyboardType: TextInputType.phone,
                                   autocorrect: false,
@@ -900,7 +963,14 @@ class CreateMemberPageState extends ConsumerState<CreateMemberPage> {
                                     filled: true,
                                     border: InputBorder.none,
                                   ),
-                                  style: Theme.of(context).textTheme.bodyMedium,
+                                  style: Theme.of(context)
+                                      .textTheme
+                                      .bodyMedium!
+                                      .copyWith(
+                                        color: Theme.of(context)
+                                            .colorScheme
+                                            .secondary,
+                                      ),
                                   keyboardType: TextInputType.emailAddress,
                                   autocorrect: false,
                                   onChanged: (value) {
@@ -942,7 +1012,17 @@ class CreateMemberPageState extends ConsumerState<CreateMemberPage> {
                                                 isConsentWhatsApp);
                                       },
                                     ),
-                                    const Text('Whatsapp'),
+                                    Text(
+                                      'Whatsapp',
+                                      style: Theme.of(context)
+                                          .textTheme
+                                          .bodyMedium!
+                                          .copyWith(
+                                            color: Theme.of(context)
+                                                .colorScheme
+                                                .secondary,
+                                          ),
+                                    ),
                                   ],
                                 ),
                                 const SizedBox(height: 8),
@@ -959,7 +1039,17 @@ class CreateMemberPageState extends ConsumerState<CreateMemberPage> {
                                                 isConsentNewsletter);
                                       },
                                     ),
-                                    const Text('Newsletter'),
+                                    Text(
+                                      'Newsletter',
+                                      style: Theme.of(context)
+                                          .textTheme
+                                          .bodyMedium!
+                                          .copyWith(
+                                            color: Theme.of(context)
+                                                .colorScheme
+                                                .secondary,
+                                          ),
+                                    ),
                                   ],
                                 ),
                                 const SizedBox(height: 30),
@@ -1021,7 +1111,14 @@ class CreateMemberPageState extends ConsumerState<CreateMemberPage> {
                                   readOnly:
                                       true, // Impedisce la digitazione manuale della data
 
-                                  style: Theme.of(context).textTheme.bodyMedium,
+                                  style: Theme.of(context)
+                                      .textTheme
+                                      .bodyMedium!
+                                      .copyWith(
+                                        color: Theme.of(context)
+                                            .colorScheme
+                                            .secondary,
+                                      ),
                                   validator: (value) {
                                     if (value == null || value.trim().isEmpty) {
                                       return 'Campo obbligatorio!';
@@ -1040,7 +1137,14 @@ class CreateMemberPageState extends ConsumerState<CreateMemberPage> {
                                     filled: true,
                                     border: InputBorder.none,
                                   ),
-                                  style: Theme.of(context).textTheme.bodyMedium,
+                                  style: Theme.of(context)
+                                        .textTheme
+                                        .bodyMedium!
+                                        .copyWith(
+                                          color: Theme.of(context)
+                                              .colorScheme
+                                              .secondary,
+                                        ),
                                   keyboardType: TextInputType.number,
                                   inputFormatters: [
                                     FilteringTextInputFormatter.digitsOnly
@@ -1066,7 +1170,12 @@ class CreateMemberPageState extends ConsumerState<CreateMemberPage> {
                                             .updateHaveCardARCI(haveCardARCI);
                                       },
                                     ),
-                                    const Text('Tessera ARCI'),
+                                    Text(
+                'Tessera',
+                style: Theme.of(context).textTheme.bodyMedium!.copyWith(
+                      color: Theme.of(context).colorScheme.secondary,
+                    ),
+              ),
                                   ],
                                 ),
                                 const SizedBox(

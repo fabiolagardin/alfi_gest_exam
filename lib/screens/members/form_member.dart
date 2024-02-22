@@ -157,7 +157,9 @@ class CreateMemberFormState extends ConsumerState<CreateMemberForm> {
                       ),
                       child: IconButton(
                         icon: const Icon(Icons.arrow_back),
-                        color: Colors.white,
+                        color: Theme.of(context)
+                                            .colorScheme
+                                            .onPrimary,
                         onPressed: goToPreviousStep,
                       ),
                     ),
@@ -171,7 +173,9 @@ class CreateMemberFormState extends ConsumerState<CreateMemberForm> {
                       ),
                       child: IconButton(
                         icon: const Icon(Icons.arrow_forward),
-                        color: Colors.white,
+                        color: Theme.of(context)
+                                            .colorScheme
+                                            .onPrimary,
                         onPressed: goToNextStep,
                       ),
                     ),

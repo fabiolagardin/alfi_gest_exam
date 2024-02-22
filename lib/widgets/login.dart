@@ -38,7 +38,9 @@ class LoginWidgetState extends ConsumerState<LoginWidget> {
               filled: true,
               border: InputBorder.none,
             ),
-            style: Theme.of(context).textTheme.bodyMedium,
+            style: Theme.of(context).textTheme.bodyMedium!.copyWith(
+                    color: Theme.of(context).colorScheme.secondary,
+                  ),
             keyboardType: TextInputType.emailAddress,
             autocorrect: false,
             textCapitalization: TextCapitalization.none,
@@ -87,7 +89,9 @@ class LoginWidgetState extends ConsumerState<LoginWidget> {
               filled: true,
               border: InputBorder.none,
             ),
-            style: Theme.of(context).textTheme.bodyMedium,
+            style: Theme.of(context).textTheme.bodyMedium!.copyWith(
+                    color: Theme.of(context).colorScheme.secondary,
+                  ),
             obscureText: !authControllerState.showPassword,
             validator: (value) {
               if (value == null || value.trim().isEmpty) {

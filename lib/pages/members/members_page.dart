@@ -89,7 +89,7 @@ class MembersPage extends ConsumerWidget {
         child: Text(
           'Scaduta',
           style: Theme.of(context).textTheme.labelLarge!.copyWith(
-                color: Theme.of(context).colorScheme.onSecondary,
+                color: Theme.of(context).colorScheme.onTertiary,
               ),
         ),
       );

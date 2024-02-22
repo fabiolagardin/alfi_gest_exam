@@ -30,7 +30,8 @@ class PersonalDetailsForm extends ConsumerWidget {
     // Update the pronounController text based on the selected pronoun
     pronounController.text = displayStringForPronoun(formState.pronoun);
 
-    documentTypeController.text = displayStringForTypeDocument(formState.documentType);
+    documentTypeController.text =
+        displayStringForTypeDocument(formState.documentType);
 
     return Form(
       key: formKey,
@@ -45,7 +46,9 @@ class PersonalDetailsForm extends ConsumerWidget {
               filled: true,
               border: InputBorder.none,
             ),
-            style: Theme.of(context).textTheme.bodyMedium,
+            style: Theme.of(context).textTheme.bodyMedium!.copyWith(
+                  color: Theme.of(context).colorScheme.secondary,
+                ),
             keyboardType: TextInputType.name,
             autocorrect: false,
             onChanged: (value) {
@@ -90,7 +93,9 @@ class PersonalDetailsForm extends ConsumerWidget {
               filled: true,
               border: InputBorder.none,
             ),
-            style: Theme.of(context).textTheme.bodyMedium,
+            style: Theme.of(context).textTheme.bodyMedium!.copyWith(
+                  color: Theme.of(context).colorScheme.secondary,
+                ),
             keyboardType: TextInputType.name,
             autocorrect: false,
             onChanged: (value) {
@@ -216,11 +221,11 @@ class PersonalDetailsForm extends ConsumerWidget {
                   color: Theme.of(context).iconTheme.color?.withOpacity(1.0),
                 ),
                 labelStyle: TextStyle(
-                  color: Theme.of(context)
-                      .textTheme
-                      .bodyMedium
-                      ?.color
-                      ?.withOpacity(1.0),
+                  color:
+                      Theme.of(context).colorScheme.secondary.withOpacity(1.0),
+                  fontWeight:
+                      Theme.of(context).textTheme.bodyMedium?.fontWeight,
+                  fontSize: Theme.of(context).textTheme.bodyMedium?.fontSize,
                 ),
                 fillColor: Theme.of(context)
                     .colorScheme
@@ -228,7 +233,9 @@ class PersonalDetailsForm extends ConsumerWidget {
                     .withOpacity(1.0),
               ),
               enabled: false,
-              style: Theme.of(context).textTheme.bodyMedium,
+              style: Theme.of(context).textTheme.bodyMedium!.copyWith(
+                    color: Theme.of(context).colorScheme.secondary,
+                  ),
             ),
           ),
           const SizedBox(height: 13),
@@ -260,7 +267,9 @@ class PersonalDetailsForm extends ConsumerWidget {
                     DateFormat('dd-MM-yyyy').format(pickedDate);
               }
             },
-            style: Theme.of(context).textTheme.bodyMedium,
+            style: Theme.of(context).textTheme.bodyMedium!.copyWith(
+                  color: Theme.of(context).colorScheme.secondary,
+                ),
             validator: (value) {
               if (value == null || value.trim().isEmpty) {
                 return 'Campo obbligatorio!';
@@ -277,7 +286,9 @@ class PersonalDetailsForm extends ConsumerWidget {
               filled: true,
               border: InputBorder.none,
             ),
-            style: Theme.of(context).textTheme.bodyMedium,
+            style: Theme.of(context).textTheme.bodyMedium!.copyWith(
+                  color: Theme.of(context).colorScheme.secondary,
+                ),
             keyboardType: TextInputType.text,
             textCapitalization: TextCapitalization.characters,
             autocorrect: false,
@@ -294,7 +305,7 @@ class PersonalDetailsForm extends ConsumerWidget {
             onTap: () {
               showModalBottomSheet(
                 context: context,
-                barrierLabel: "Seleziona il tipo di documento",
+                barrierLabel: "Seleziona il documento",
                 shape: const RoundedRectangleBorder(
                   borderRadius: BorderRadius.only(
                     topLeft: Radius.circular(20),
@@ -323,7 +334,7 @@ class PersonalDetailsForm extends ConsumerWidget {
                                 padding: const EdgeInsets.only(
                                     right: 48.0), // Consider the leading space
                                 child: Text(
-                                  "Seleziona il tipo di documento",
+                                  "Seleziona il documento",
                                 ),
                               ),
                             ),
@@ -402,11 +413,11 @@ class PersonalDetailsForm extends ConsumerWidget {
                   color: Theme.of(context).iconTheme.color?.withOpacity(1.0),
                 ),
                 labelStyle: TextStyle(
-                  color: Theme.of(context)
-                      .textTheme
-                      .bodyMedium
-                      ?.color
-                      ?.withOpacity(1.0),
+                  color:
+                      Theme.of(context).colorScheme.secondary.withOpacity(1.0),
+                  fontWeight:
+                      Theme.of(context).textTheme.bodyMedium?.fontWeight,
+                  fontSize: Theme.of(context).textTheme.bodyMedium?.fontSize,
                 ),
                 fillColor: Theme.of(context)
                     .colorScheme
@@ -414,7 +425,9 @@ class PersonalDetailsForm extends ConsumerWidget {
                     .withOpacity(1.0),
               ),
               enabled: false,
-              style: Theme.of(context).textTheme.bodyMedium,
+              style: Theme.of(context).textTheme.bodyMedium!.copyWith(
+                    color: Theme.of(context).colorScheme.secondary,
+                  ),
               validator: (value) {
                 if (value == '') {
                   return 'Campo obbligatorio!';
@@ -432,7 +445,9 @@ class PersonalDetailsForm extends ConsumerWidget {
               filled: true,
               border: InputBorder.none,
             ),
-            style: Theme.of(context).textTheme.bodyMedium,
+            style: Theme.of(context).textTheme.bodyMedium!.copyWith(
+                  color: Theme.of(context).colorScheme.secondary,
+                ),
             keyboardType: TextInputType.text,
             textCapitalization: TextCapitalization.characters,
             autocorrect: false,

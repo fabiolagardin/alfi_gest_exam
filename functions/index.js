@@ -14,10 +14,12 @@ const db = admin.firestore();
 
 exports.registerUser = functions.https.onCall(async (data) => {
   const {email, password} = data;
+  console.log(`Email:${email}, Password: ${password}`);
   try {
     const userRecord = await admin.auth().createUser({email, password});
     return {uid: userRecord.uid};
   } catch (error) {
+    console.error(error);
     if (error.code === "auth/email-already-exists") {
       return {error: "Utente già registrato con questa email"};
     } else {

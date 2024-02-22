@@ -72,7 +72,14 @@ class MemberReplaceCardState extends ConsumerState<MemberReplaceCard> {
                         filled: true,
                         border: InputBorder.none,
                       ),
-                      style: Theme.of(context).textTheme.bodyMedium,
+                      style: Theme.of(context)
+                                        .textTheme
+                                        .bodyMedium!
+                                        .copyWith(
+                                          color: Theme.of(context)
+                                              .colorScheme
+                                              .secondary,
+                                        ),
                       keyboardType: TextInputType.number,
                       inputFormatters: [FilteringTextInputFormatter.digitsOnly],
                       onChanged: (value) {
@@ -210,19 +217,33 @@ class MemberReplaceCardState extends ConsumerState<MemberReplaceCard> {
                                 ?.withOpacity(1.0),
                           ),
                           labelStyle: TextStyle(
-                            color: Theme.of(context)
-                                .textTheme
-                                .bodyMedium
-                                ?.color
-                                ?.withOpacity(1.0),
-                          ),
+                                          color: Theme.of(context)
+                                              .colorScheme
+                                              .secondary
+                                              .withOpacity(1.0),
+                                          fontWeight: Theme.of(context)
+                                              .textTheme
+                                              .bodyMedium
+                                              ?.fontWeight,
+                                          fontSize: Theme.of(context)
+                                              .textTheme
+                                              .bodyMedium
+                                              ?.fontSize,
+                                        ),
                           fillColor: Theme.of(context)
                               .colorScheme
                               .surfaceVariant
                               .withOpacity(1.0),
                         ),
                         enabled: false,
-                        style: Theme.of(context).textTheme.bodyMedium,
+                        style: Theme.of(context)
+                                        .textTheme
+                                        .bodyMedium!
+                                        .copyWith(
+                                          color: Theme.of(context)
+                                              .colorScheme
+                                              .secondary,
+                                        ),
                       ),
                     ),
                     const SizedBox(height: 40),

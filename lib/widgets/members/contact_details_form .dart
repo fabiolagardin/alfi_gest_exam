@@ -23,7 +23,9 @@ class ContactDetailsForm extends ConsumerWidget {
               filled: true,
               border: InputBorder.none,
             ),
-            style: Theme.of(context).textTheme.bodyMedium,
+            style: Theme.of(context).textTheme.bodyMedium!.copyWith(
+                  color: Theme.of(context).colorScheme.secondary,
+                ),
 
             keyboardType: TextInputType.streetAddress,
             autocorrect: false,
@@ -42,7 +44,9 @@ class ContactDetailsForm extends ConsumerWidget {
               filled: true,
               border: InputBorder.none,
             ),
-            style: Theme.of(context).textTheme.bodyMedium,
+            style: Theme.of(context).textTheme.bodyMedium!.copyWith(
+                  color: Theme.of(context).colorScheme.secondary,
+                ),
 
             keyboardType: TextInputType.phone,
             autocorrect: false,
@@ -63,7 +67,9 @@ class ContactDetailsForm extends ConsumerWidget {
               filled: true,
               border: InputBorder.none,
             ),
-            style: Theme.of(context).textTheme.bodyMedium,
+            style: Theme.of(context).textTheme.bodyMedium!.copyWith(
+                  color: Theme.of(context).colorScheme.secondary,
+                ),
             keyboardType: TextInputType.emailAddress,
             autocorrect: false,
             onChanged: (value) {
@@ -99,7 +105,12 @@ class ContactDetailsForm extends ConsumerWidget {
                       .updateConsentWhatsApp(isConsentWhatsApp);
                 },
               ),
-              const Text('Whatsapp'),
+              Text(
+                'Whatsapp',
+                style: Theme.of(context).textTheme.bodyMedium!.copyWith(
+                      color: Theme.of(context).colorScheme.secondary,
+                    ),
+              ),
             ],
           ),
           const SizedBox(height: 8),
@@ -114,7 +125,12 @@ class ContactDetailsForm extends ConsumerWidget {
                       .updateConsentNewsletter(isConsentNewsletter);
                 },
               ),
-              const Text('Newsletter'),
+              Text(
+                'Newsletter',
+                style: Theme.of(context).textTheme.bodyMedium!.copyWith(
+                      color: Theme.of(context).colorScheme.secondary,
+                    ),
+              ),
             ],
           ),
           const SizedBox(height: 30),

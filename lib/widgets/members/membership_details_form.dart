@@ -50,7 +50,7 @@ class MembershipDetailsForm extends ConsumerWidget {
             child: Text(
               'Oltre alla tessera ALFI, vuoi aggiungere la tessera ARCI?',
               style: Theme.of(context).textTheme.bodyLarge!.copyWith(
-                    color: Theme.of(context).colorScheme.onSurface,
+                    color: Theme.of(context).colorScheme.secondary,
                     height: 1.2,
                   ),
             ),
@@ -66,7 +66,12 @@ class MembershipDetailsForm extends ConsumerWidget {
                       .updateHaveCardARCI(haveCardARCI);
                 },
               ),
-              const Text('Tessera ARCI'),
+              Text(
+                'Tessera ARCI',
+                style: Theme.of(context).textTheme.bodyMedium!.copyWith(
+                      color: Theme.of(context).colorScheme.secondary,
+                    ),
+              ),
             ],
           ),
           const SizedBox(height: 8),

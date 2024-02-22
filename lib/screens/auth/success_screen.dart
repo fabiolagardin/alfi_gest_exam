@@ -33,34 +33,30 @@ class SuccessScreen extends ConsumerWidget {
             const SizedBox(height: 40),
             Text(
               'Operazione Completata!',
-               textAlign: TextAlign.center,
+              textAlign: TextAlign.center,
               style: TextStyle(
-                    fontSize: 30,
-                    color: Theme.of(context).colorScheme.secondary,
-                    height: 1.2,
-                  ),
+                fontSize: 30,
+                color: Theme.of(context).colorScheme.secondary,
+                height: 1.2,
+              ),
             ),
             const SizedBox(height: 40),
             Center(
-  child: Image.asset('assets/images/success.png'),
-),
+              child: Image.asset('assets/images/success.png'),
+            ),
             const SizedBox(height: 80),
             ElevatedButton(
-              
               onPressed: () {
                 Navigator.pushNamed(context, '/login');
               },
               style: ElevatedButton.styleFrom(
-                padding:
-                                  const EdgeInsets.only(left: 40, right: 40),
-                              minimumSize:
-                                  Size(0, 48), // Imposta l'altezza desiderata
-                              backgroundColor:
-                                  Theme.of(context).colorScheme.primary,
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(100),
-                              ),
-                              alignment: Alignment.center,
+                padding: const EdgeInsets.only(left: 40, right: 40),
+                minimumSize: Size(0, 48), // Imposta l'altezza desiderata
+                backgroundColor: Theme.of(context).colorScheme.primary,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(100),
+                ),
+                alignment: Alignment.center,
               ),
               child: Text(
                 'Login',

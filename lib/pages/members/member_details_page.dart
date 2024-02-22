@@ -128,7 +128,7 @@ class MemberDetailsPageState extends ConsumerState<MemberDetailsPage> {
                                           .copyWith(
                                             color: Theme.of(context)
                                                 .colorScheme
-                                                .onPrimary,
+                                                .onTertiary,
                                             fontFamily: "Roboto",
                                           ),
                                     ),
@@ -145,7 +145,7 @@ class MemberDetailsPageState extends ConsumerState<MemberDetailsPage> {
                                           .copyWith(
                                             color: Theme.of(context)
                                                 .colorScheme
-                                                .onPrimary,
+                                                .onTertiary,
                                           ),
                                     ),
                                   ],
@@ -480,6 +480,7 @@ class MemberDetailsPageState extends ConsumerState<MemberDetailsPage> {
                         ],
                       ),
                     ),
+                    const SizedBox(height: 80),
                   ],
                 ),
               ),

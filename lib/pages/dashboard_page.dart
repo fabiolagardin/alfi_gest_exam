@@ -33,7 +33,9 @@ class DashboardPage extends ConsumerWidget {
               padding: const EdgeInsets.only(bottom: 8),
               child: Text(
                 userData == null ? "Ciao!" : "Ciao, ${userData.legalName}!",
-                style: Theme.of(context).textTheme.headlineLarge,
+                style: Theme.of(context).textTheme.headlineLarge!.copyWith(
+                    color: Theme.of(context).colorScheme.secondary,
+                  ),
               ),
             ),
             Padding(
