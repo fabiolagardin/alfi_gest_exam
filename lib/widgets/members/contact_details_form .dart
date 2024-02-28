@@ -1,4 +1,4 @@
-import 'package:alfi_gest/providers/create_member_provider.dart';
+import 'package:alfi_gest/providers/member/create_member_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 

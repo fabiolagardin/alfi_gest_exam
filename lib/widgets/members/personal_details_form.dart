@@ -1,6 +1,7 @@
+import 'package:alfi_gest/helpers/date_time.dart';
 import 'package:alfi_gest/helpers/string_helper.dart';
 import 'package:alfi_gest/models/enums.dart';
-import 'package:alfi_gest/providers/create_member_provider.dart';
+import 'package:alfi_gest/providers/member/create_member_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -240,7 +241,7 @@ class PersonalDetailsForm extends ConsumerWidget {
           ),
           const SizedBox(height: 13),
           TextFormField(
-            controller: dateController,
+            initialValue: DateFormat('dd-MM-yyyy').format(formState.birthDate),
             decoration: InputDecoration(
               labelText: 'Data di nascita *',
               fillColor: Theme.of(context).colorScheme.surfaceVariant,
@@ -252,10 +253,10 @@ class PersonalDetailsForm extends ConsumerWidget {
             onTap: () async {
               DateTime? pickedDate = await showDatePicker(
                 context: context,
-                initialDate: formState.birthDate ?? DateTime.now(),
+                initialDate: formState.birthDate,
                 firstDate: DateTime(1900),
                 lastDate: DateTime.now(),
-                //locale: Locale('it', 'IT'),
+                locale: Locale('it', 'IT'),
               );
               if (pickedDate != null) {
                 // Update the provider state with the new birth date
@@ -273,6 +274,10 @@ class PersonalDetailsForm extends ConsumerWidget {
             validator: (value) {
               if (value == null || value.trim().isEmpty) {
                 return 'Campo obbligatorio!';
+              }
+
+              if (!DateHelper.isAdult(formState.birthDate)) {
+                return 'Devi essere maggiorenne per iscriverti!';
               }
               return null;
             },
@@ -298,7 +303,16 @@ class PersonalDetailsForm extends ConsumerWidget {
                   .read(createMemberFormProvider.notifier)
                   .updateTaxIdCode(value.toUpperCase());
             },
-            // Add validators and other parameters if needed
+            validator: (value) {
+              if (value == null || value.trim().isEmpty) {
+                return 'Campo obbligatorio!';
+              }
+              if (!RegExp(r'^[A-Z]{6}\d{2}[A-Z]\d{2}[A-Z]\d{3}[A-Z]$')
+                  .hasMatch(value.trim())) {
+                return 'Per favore inserire un codice fiscale valido.';
+              }
+              return null;
+            },
           ),
           const SizedBox(height: 13),
           InkWell(

@@ -13,4 +13,13 @@ class DateHelper {
 
     return expirationDate;
   }
+
+  // funzione per calcolare se è maggiorenne
+  static bool isAdult(DateTime birthDate) {
+    DateTime now = DateTime.now();
+    DateTime today = DateTime(now.year, now.month, now.day);
+    DateTime adultDate = DateTime(today.year - 18, today.month, today.day);
+    return birthDate.isBefore(adultDate) ||
+        birthDate.isAtSameMomentAs(adultDate);
+  }
 }

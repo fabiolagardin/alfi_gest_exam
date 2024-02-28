@@ -1,9 +1,9 @@
 import 'package:alfi_gest/models/enums.dart';
-import 'package:alfi_gest/providers/user_data_provider.dart';
+import 'package:alfi_gest/providers/auth/user_data_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import 'package:alfi_gest/providers/member_role_provider.dart';
+import 'package:alfi_gest/providers/member/member_role_provider.dart';
 import 'package:alfi_gest/helpers/string_helper.dart';
 
 class DashboardPage extends ConsumerWidget {
@@ -13,16 +13,7 @@ class DashboardPage extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final userData = ref.watch(userDataProvider);
     final memberRole = ref.watch(roleProvider);
-    String pronuon = "";
-    if (userData == null) {
-      // Gestisci il caso in cui _userData è null
-    } else if (userData.pronoun == Pronoun.lei) {
-      pronuon = "a";
-    } else if (userData.pronoun == Pronoun.lui) {
-      pronuon = "o";
-    } else {
-      pronuon = "*";
-    }
+
     return SingleChildScrollView(
       child: Padding(
         padding: EdgeInsets.fromLTRB(25, 15, 0, 0),
@@ -32,10 +23,12 @@ class DashboardPage extends ConsumerWidget {
             Padding(
               padding: const EdgeInsets.only(bottom: 8),
               child: Text(
-                userData == null ? "Ciao!" : "Ciao, ${userData.legalName}!",
+                userData == null
+                    ? "Ciao!"
+                    : "Ciao ${userData.givenName.isEmpty ? userData.legalName : userData.givenName}!",
                 style: Theme.of(context).textTheme.headlineLarge!.copyWith(
-                    color: Theme.of(context).colorScheme.secondary,
-                  ),
+                      color: Theme.of(context).colorScheme.secondary,
+                    ),
               ),
             ),
             Padding(

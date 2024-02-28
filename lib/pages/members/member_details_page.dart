@@ -1,7 +1,7 @@
 import 'package:alfi_gest/helpers/date_time.dart';
 import 'package:alfi_gest/pages/members/member_replace_card.dart';
 import 'package:alfi_gest/pages/members/members_page.dart';
-import 'package:alfi_gest/providers/create_member_provider.dart';
+import 'package:alfi_gest/providers/member/create_member_provider.dart';
 import 'package:alfi_gest/screens/main_screen.dart';
 import 'package:alfi_gest/services/member_service.dart';
 import 'package:flutter/material.dart';
@@ -89,7 +89,7 @@ class MemberDetailsPageState extends ConsumerState<MemberDetailsPage> {
                     Padding(
                       padding: const EdgeInsets.symmetric(vertical: 25),
                       child: Text(
-                        "${member.legalName} ${member.lastName}",
+                        '${member.lastName} ${member.givenName.isEmpty ? member.legalName : member.givenName}',
                         textAlign: TextAlign.center,
                         style: Theme.of(context)
                             .textTheme

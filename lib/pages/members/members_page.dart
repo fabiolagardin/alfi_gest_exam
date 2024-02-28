@@ -5,9 +5,9 @@ import 'package:alfi_gest/models/club.dart';
 import 'package:alfi_gest/models/enums.dart';
 import 'package:alfi_gest/models/member.dart';
 import 'package:alfi_gest/pages/members/members_helpers.dart';
-import 'package:alfi_gest/providers/clubs_provder.dart';
-import 'package:alfi_gest/providers/create_member_provider.dart';
-import 'package:alfi_gest/providers/members_data_provider.dart';
+import 'package:alfi_gest/providers/clubs/clubs_provder.dart';
+import 'package:alfi_gest/providers/member/create_member_provider.dart';
+import 'package:alfi_gest/providers/member/members_data_provider.dart';
 import 'package:alfi_gest/screens/main_screen.dart';
 import 'package:alfi_gest/services/member_service.dart';
 
@@ -351,11 +351,11 @@ class MembersPage extends ConsumerWidget {
                                   ),
                                   subtitle: Padding(
                                     padding: const EdgeInsets.only(left: 8),
-                                      child: Text(
-                                          member.numberCard.isEmpty
-                                              ? "Senza Tessera"
-                                              : member.numberCard,
-                                          style: Theme.of(context)
+                                    child: Text(
+                                        member.numberCard.isEmpty
+                                            ? "Senza Tessera"
+                                            : member.numberCard,
+                                        style: Theme.of(context)
                                             .textTheme
                                             .bodyLarge!
                                             .copyWith(

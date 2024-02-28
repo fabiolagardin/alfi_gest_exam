@@ -1,8 +1,7 @@
 import 'package:alfi_gest/helpers/string_helper.dart';
 import 'package:alfi_gest/models/enums.dart';
 import 'package:alfi_gest/pages/members/members_page.dart';
-import 'package:alfi_gest/providers/create_member_provider.dart';
-import 'package:alfi_gest/providers/member_data_provider.dart';
+import 'package:alfi_gest/providers/member/create_member_provider.dart';
 import 'package:alfi_gest/screens/main_screen.dart';
 import 'package:alfi_gest/services/member_service.dart';
 import 'package:flutter/material.dart';
@@ -72,18 +71,27 @@ class MemberReplaceCardState extends ConsumerState<MemberReplaceCard> {
                         filled: true,
                         border: InputBorder.none,
                       ),
-                      style: Theme.of(context)
-                                        .textTheme
-                                        .bodyMedium!
-                                        .copyWith(
-                                          color: Theme.of(context)
-                                              .colorScheme
-                                              .secondary,
-                                        ),
+                      style: Theme.of(context).textTheme.bodyMedium!.copyWith(
+                            color: Theme.of(context).colorScheme.secondary,
+                          ),
                       keyboardType: TextInputType.number,
                       inputFormatters: [FilteringTextInputFormatter.digitsOnly],
-                      onChanged: (value) {
-                        // Aggiorna lo stato del provider con il nuovo nome
+                      onChanged: (value) async {
+                        var sm = ScaffoldMessenger.of(context);
+                        var newCardNumerValidate = await MemberService()
+                            .validateNewCardNumber(member.numberCard);
+                        if (!newCardNumerValidate.valid) {
+                          // member.numberCard = newCardNumerValidate.data!; quando si vorrà implementare la generazione automatica del numero tessera
+                          ref.read(isLoadingProvider.notifier).state = false;
+                          final snackBar = SnackBar(
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(4),
+                              ),
+                              content: Text(newCardNumerValidate.message ??
+                                  'Si è verificato un errore sconosciuto.'),
+                              behavior: SnackBarBehavior.floating);
+                          sm.showSnackBar(snackBar);
+                        }
                         ref
                             .read(createMemberFormProvider.notifier)
                             .updateNumberCard(value);
@@ -217,33 +225,28 @@ class MemberReplaceCardState extends ConsumerState<MemberReplaceCard> {
                                 ?.withOpacity(1.0),
                           ),
                           labelStyle: TextStyle(
-                                          color: Theme.of(context)
-                                              .colorScheme
-                                              .secondary
-                                              .withOpacity(1.0),
-                                          fontWeight: Theme.of(context)
-                                              .textTheme
-                                              .bodyMedium
-                                              ?.fontWeight,
-                                          fontSize: Theme.of(context)
-                                              .textTheme
-                                              .bodyMedium
-                                              ?.fontSize,
-                                        ),
+                            color: Theme.of(context)
+                                .colorScheme
+                                .secondary
+                                .withOpacity(1.0),
+                            fontWeight: Theme.of(context)
+                                .textTheme
+                                .bodyMedium
+                                ?.fontWeight,
+                            fontSize: Theme.of(context)
+                                .textTheme
+                                .bodyMedium
+                                ?.fontSize,
+                          ),
                           fillColor: Theme.of(context)
                               .colorScheme
                               .surfaceVariant
                               .withOpacity(1.0),
                         ),
                         enabled: false,
-                        style: Theme.of(context)
-                                        .textTheme
-                                        .bodyMedium!
-                                        .copyWith(
-                                          color: Theme.of(context)
-                                              .colorScheme
-                                              .secondary,
-                                        ),
+                        style: Theme.of(context).textTheme.bodyMedium!.copyWith(
+                              color: Theme.of(context).colorScheme.secondary,
+                            ),
                       ),
                     ),
                     const SizedBox(height: 40),

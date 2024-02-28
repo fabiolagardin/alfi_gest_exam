@@ -47,6 +47,31 @@ class MemberService {
     return Result(valid: true, data: members);
   }
 
+  Future<Result<String>> validateNewCardNumber(String newCardNumber) async {
+    var members = await getMembers();
+    var existingCardNumbers =
+        members.data!.map((member) => member.numberCard).toSet();
+    var valid = existingCardNumbers.contains(newCardNumber);
+
+    if (valid) {
+      String firstAvailableCardNumber = "";
+      for (int i = 1; i <= 999999; i++) {
+        String cardNumber = i.toString().padLeft(6, '0');
+        if (!existingCardNumbers.contains(cardNumber)) {
+          firstAvailableCardNumber = cardNumber;
+          break;
+        }
+      }
+      return Result(
+          valid: false,
+          message:
+              "Il numero della carta è già stato assegnato. Il primo numero disponibile è: $firstAvailableCardNumber",
+          data: firstAvailableCardNumber);
+    }
+
+    return Result(valid: true, data: newCardNumber);
+  }
+
   Future<Result<String>> registerUser(String email, String password) async {
     final HttpsCallable callable =
         FirebaseFunctions.instance.httpsCallable('registerUser');
@@ -254,5 +279,21 @@ class MemberService {
     final roleString = Role.values[role].name;
 
     return Result(valid: true, data: roleString);
+  }
+
+  Result<String> compareRoleWithSting(String role) {
+    if (role == Role.amministratore.name) {
+      return Result(valid: true, data: "Amministratore");
+    } else if (role == Role.segretariaNazionale.name) {
+      return Result(valid: true, data: "Segretaria Nazionale");
+    } else if (role == Role.responsabileCircolo.name) {
+      return Result(valid: true, data: "Responsabile Circolo");
+    } else if (role == Role.socia.name) {
+      return Result(valid: true, data: "Socia");
+    } else if (role == Role.nonAssegnato.name) {
+      return Result(valid: true, data: "Ospite");
+    } else {
+      return Result(valid: false, error: "Ruolo non valido");
+    }
   }
 }

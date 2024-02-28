@@ -56,7 +56,7 @@ class Member {
   final bool consentNewsletter;
   final bool workingPartner;
   final bool volunteerMember;
-  final String numberCard;
+  String numberCard;
   final String idClub;
   final bool haveCardARCI;
   final DateTime memberSince;

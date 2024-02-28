@@ -1,17 +1,14 @@
-
+import 'package:alfi_gest/screens/auth/auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class ErrorScreen extends ConsumerWidget {
-  const ErrorScreen({Key? key}) : super(key: key);
+class ErrorPage extends ConsumerWidget {
+  const ErrorPage({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     Brightness brightness = MediaQuery.of(context).platformBrightness;
     bool isDarkMode = brightness == Brightness.dark;
-    // bool isResetPw = ref.watch(isResetPassword);
-    // final authState = ref.watch(authProvider);
-    // final authController = ref.read(authProvider.notifier);
 
     return Scaffold(
       body: SingleChildScrollView(
@@ -50,10 +47,11 @@ class ErrorScreen extends ConsumerWidget {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Padding(
-                  padding: const EdgeInsets.only(right:20),
+                  padding: const EdgeInsets.only(right: 20),
                   child: ElevatedButton(
                     onPressed: () {
-                      Navigator.pushNamed(context, '/login');
+                      ref.read(isErrorPageProvider.notifier).state = false;
+                      ref.read(isRegisterMemberProvider.notifier).state = false;
                     },
                     style: ElevatedButton.styleFrom(
                       padding: const EdgeInsets.only(left: 40, right: 40),
@@ -66,10 +64,8 @@ class ErrorScreen extends ConsumerWidget {
                     ),
                     child: Text(
                       'Login',
-                      style: Theme.of(context)
-                          .textTheme
-                          .bodyLarge!
-                          .copyWith(color: Theme.of(context).colorScheme.onPrimary),
+                      style: Theme.of(context).textTheme.bodyLarge!.copyWith(
+                          color: Theme.of(context).colorScheme.onPrimary),
                     ),
                   ),
                 ),
@@ -77,7 +73,8 @@ class ErrorScreen extends ConsumerWidget {
                   padding: const EdgeInsets.only(left: 20),
                   child: ElevatedButton(
                     onPressed: () {
-                      Navigator.pushNamed(context, '/singin');
+                      ref.read(isErrorPageProvider.notifier).state = false;
+                      ref.read(isRegisterMemberProvider.notifier).state = true;
                     },
                     style: ElevatedButton.styleFrom(
                       padding: const EdgeInsets.only(left: 40, right: 40),
@@ -90,10 +87,8 @@ class ErrorScreen extends ConsumerWidget {
                     ),
                     child: Text(
                       'Riprova',
-                      style: Theme.of(context)
-                          .textTheme
-                          .bodyLarge!
-                          .copyWith(color: Theme.of(context).colorScheme.onPrimary),
+                      style: Theme.of(context).textTheme.bodyLarge!.copyWith(
+                          color: Theme.of(context).colorScheme.onPrimary),
                     ),
                   ),
                 ),

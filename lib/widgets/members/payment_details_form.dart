@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:alfi_gest/providers/create_member_provider.dart';
+import 'package:alfi_gest/providers/member/create_member_provider.dart';
 import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
 
@@ -132,6 +132,7 @@ class PaymentDetailsForm extends ConsumerWidget {
                                             DateTime.now(),
                                     firstDate: DateTime(1900),
                                     lastDate: DateTime.now(),
+                                    locale: const Locale('it', 'IT'),
                                   );
                                   if (pickedDate != null) {
                                     // Aggiorna lo stato del provider con la nuova data di nascita
@@ -145,9 +146,14 @@ class PaymentDetailsForm extends ConsumerWidget {
                                             .format(pickedDate);
                                   }
                                 },
-                                style: Theme.of(context).textTheme.bodyMedium!.copyWith(
-                      color: Theme.of(context).colorScheme.secondary,
-                    ),
+                                style: Theme.of(context)
+                                    .textTheme
+                                    .bodyMedium!
+                                    .copyWith(
+                                      color: Theme.of(context)
+                                          .colorScheme
+                                          .secondary,
+                                    ),
                               ),
                             ),
                             const SizedBox(width: 10),

@@ -2,8 +2,8 @@ import 'package:alfi_gest/models/enums.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import 'package:alfi_gest/providers/member_data_provider.dart';
-import 'package:alfi_gest/providers/member_role_provider.dart';
+import 'package:alfi_gest/providers/member/member_data_provider.dart';
+import 'package:alfi_gest/providers/member/member_role_provider.dart';
 
 class ClubsPage extends ConsumerWidget {
   const ClubsPage({Key? key}) : super(key: key);

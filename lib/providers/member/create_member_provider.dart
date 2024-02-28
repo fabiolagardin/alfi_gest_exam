@@ -173,8 +173,7 @@ class CreateMemberFormState {
       updateDate: updateDate ?? DateTime.now(),
       updateUser: updateUser ?? this.updateUser,
       dateLastRenewal: dateLastRenewal ?? this.dateLastRenewal,
-      expirationDate:
-          expirationDate ?? DateTime.now().add(const Duration(days: 365)),
+      expirationDate: expirationDate ?? DateHelper.calculateExpirationDate(),
       isSuspended: isSuspended ?? this.isSuspended,
       replaceCardMotivation:
           replaceCardMotivation ?? this.replaceCardMotivation,
@@ -192,12 +191,15 @@ class CreateMemberFormStateNotifier
     extends StateNotifier<CreateMemberFormState> {
   final ClubService _clubService;
   CreateMemberFormStateNotifier(this._clubService)
-      : super(CreateMemberFormState(
+      : super(
+          CreateMemberFormState(
             birthDate: DateTime.now(),
             creationDate: DateTime.now(),
             updateDate: DateTime.now(),
             dateLastRenewal: DateTime.now(),
-            expirationDate: DateTime.now().add(const Duration(days: 365))));
+            expirationDate: DateHelper.calculateExpirationDate(),
+          ),
+        );
   void updateMemberId(String value) => state = state.copyWith(memberId: value);
   void updateLegalName(String value) =>
       state = state.copyWith(legalName: value);

@@ -1,4 +1,4 @@
-import 'package:alfi_gest/providers/user_data_provider.dart';
+import 'package:alfi_gest/providers/auth/user_data_provider.dart';
 import 'package:alfi_gest/services/member_service.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 

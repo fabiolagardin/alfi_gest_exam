@@ -4,6 +4,7 @@ class Result<T> {
     this.hasData = true,
     this.errors,
     this.error,
+    this.message,
     this.data,
   });
 
@@ -11,6 +12,7 @@ class Result<T> {
   bool hasData = true;
   List<String>? errors;
   String? error;
+  String? message;
   T? data;
 
   bool isSuccess() {

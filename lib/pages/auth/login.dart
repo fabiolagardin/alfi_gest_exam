@@ -1,22 +1,22 @@
-import 'package:alfi_gest/providers/auth_provider.dart';
+import 'package:alfi_gest/providers/auth/auth_provider.dart';
+import 'package:alfi_gest/screens/auth/auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class LoginWidget extends ConsumerStatefulWidget {
-  const LoginWidget({super.key});
+class LoginPage extends ConsumerStatefulWidget {
+  const LoginPage({super.key});
   @override
-  LoginWidgetState createState() => LoginWidgetState();
+  LoginPageState createState() => LoginPageState();
 }
 
-class LoginWidgetState extends ConsumerState<LoginWidget> {
+class LoginPageState extends ConsumerState<LoginPage> {
   final emailController = TextEditingController();
   final passwordController = TextEditingController();
   final formKey = GlobalKey<FormState>();
 
   @override
   Widget build(BuildContext context) {
-    final authController = ref.watch(authProvider
-        .notifier); // Ottieni il riferimento al controller di autenticazione
+    final authController = ref.watch(authProvider.notifier);
     final authControllerState = ref.read(authProvider.notifier).state;
     ValueNotifier<bool> rememberMe =
         ValueNotifier<bool>(authControllerState.rememberMe);
@@ -39,8 +39,8 @@ class LoginWidgetState extends ConsumerState<LoginWidget> {
               border: InputBorder.none,
             ),
             style: Theme.of(context).textTheme.bodyMedium!.copyWith(
-                    color: Theme.of(context).colorScheme.secondary,
-                  ),
+                  color: Theme.of(context).colorScheme.secondary,
+                ),
             keyboardType: TextInputType.emailAddress,
             autocorrect: false,
             textCapitalization: TextCapitalization.none,
@@ -90,24 +90,24 @@ class LoginWidgetState extends ConsumerState<LoginWidget> {
               border: InputBorder.none,
             ),
             style: Theme.of(context).textTheme.bodyMedium!.copyWith(
-                    color: Theme.of(context).colorScheme.secondary,
-                  ),
+                  color: Theme.of(context).colorScheme.secondary,
+                ),
             obscureText: !authControllerState.showPassword,
             validator: (value) {
               if (value == null || value.trim().isEmpty) {
                 return 'Per favore, inserisci una password!';
               }
-              
+
               //if (value == null || value.trim().length < 5) {
-                //return 'La password deve avere almeno 8 caratteri.';
+              //return 'La password deve avere almeno 8 caratteri.';
               //}
 
               //if (!value.contains(RegExp(r'[0-9]'))) {
-                //return 'La password deve contenere almeno un numero';
+              //return 'La password deve contenere almeno un numero';
               //}
 
               //if (!value.contains(RegExp(r'[A-Z]'))) {
-                //return 'La password deve contenere almeno una lettera maiuscola';
+              //return 'La password deve contenere almeno una lettera maiuscola';
               //}
 
               return null;
@@ -162,8 +162,9 @@ class LoginWidgetState extends ConsumerState<LoginWidget> {
               ),
               const Spacer(), // Spinge il testo "Password dimenticata?" a destra
               TextButton(
-                onPressed: () =>
-                    Navigator.pushNamed(context, '/reset-password'),
+                onPressed: () {
+                  ref.read(isResetPasswordPage.notifier).state = true;
+                },
                 child: Text(
                   'Password dimenticata?',
                   style: TextStyle(
@@ -255,7 +256,8 @@ class LoginWidgetState extends ConsumerState<LoginWidget> {
           const SizedBox(height: 10),
           TextButton(
             onPressed: () {
-              Navigator.pushNamed(context, '/singin');
+              // Navigator.pushNamed(context, '/singin');
+              ref.read(isRegisterMemberProvider.notifier).state = true;
             },
             style: TextButton.styleFrom(
               minimumSize: Size.zero,

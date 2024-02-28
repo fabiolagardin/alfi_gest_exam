@@ -1,16 +1,14 @@
+import 'package:alfi_gest/screens/auth/auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class SuccessScreen extends ConsumerWidget {
-  const SuccessScreen({Key? key}) : super(key: key);
+class SuccessPage extends ConsumerWidget {
+  const SuccessPage({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     Brightness brightness = MediaQuery.of(context).platformBrightness;
     bool isDarkMode = brightness == Brightness.dark;
-    // bool isResetPw = ref.watch(isResetPassword);
-    // final authState = ref.watch(authProvider);
-    // final authController = ref.read(authProvider.notifier);
 
     return Scaffold(
       body: SingleChildScrollView(
@@ -47,11 +45,12 @@ class SuccessScreen extends ConsumerWidget {
             const SizedBox(height: 80),
             ElevatedButton(
               onPressed: () {
-                Navigator.pushNamed(context, '/login');
+                ref.read(isRegisterMemberProvider.notifier).state = false;
+                ref.read(isSuccessPageProvider.notifier).state = false;
               },
               style: ElevatedButton.styleFrom(
                 padding: const EdgeInsets.only(left: 40, right: 40),
-                minimumSize: Size(0, 48), // Imposta l'altezza desiderata
+                minimumSize: Size(0, 48),
                 backgroundColor: Theme.of(context).colorScheme.primary,
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(100),

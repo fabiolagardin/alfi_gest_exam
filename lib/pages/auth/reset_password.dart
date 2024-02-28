@@ -1,23 +1,22 @@
+import 'package:alfi_gest/screens/auth/auth.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter/material.dart';
 
-import 'package:alfi_gest/providers/auth_provider.dart';
+import 'package:alfi_gest/providers/auth/auth_provider.dart';
 
-class ResetPasswordScreen extends ConsumerWidget {
-  const ResetPasswordScreen({Key? key}) : super(key: key);
+class ResetPasswordPage extends ConsumerWidget {
+  const ResetPasswordPage({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     Brightness brightness = MediaQuery.of(context).platformBrightness;
     bool isDarkMode = brightness == Brightness.dark;
-    final authState = ref.watch(authProvider);
     final authController = ref.read(authProvider.notifier);
-
+    print("isResetPasswordPage: ${ref.watch(isResetPasswordPage)}");
     return Scaffold(
       body: GestureDetector(
         onTap: () {
-          // Azione da eseguire quando viene premuto ovunque sulla schermata.
-          FocusScope.of(context).unfocus(); // Chiudi la tastiera se aperta.
+          FocusScope.of(context).unfocus();
         },
         child: Center(
           child: SingleChildScrollView(
@@ -76,7 +75,10 @@ class ResetPasswordScreen extends ConsumerWidget {
                           children: [
                             const Spacer(),
                             ElevatedButton(
-                              onPressed: () {},
+                              onPressed: () {
+                                ref.read(isResetPasswordPage.notifier).state =
+                                    false;
+                              },
                               style: ElevatedButton.styleFrom(
                                 padding: const EdgeInsets.symmetric(
                                     horizontal: 40, vertical: 14),
@@ -112,16 +114,16 @@ class ResetPasswordScreen extends ConsumerWidget {
                   padding: const EdgeInsets.fromLTRB(40, 100, 30, 30),
                   child: GestureDetector(
                     onTap: () {
-                      // Azione da eseguire quando si preme l'icona o il testo "Indietro".
-                      Navigator.pushNamed(context, '/login');
+                      print(
+                          "isResetPasswordPage: ${ref.watch(isResetPasswordPage)}");
+
+                      ref.read(isResetPasswordPage.notifier).state = false;
                     },
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.start,
                       children: [
                         Icon(Icons.chevron_left, size: 32.0),
-                        SizedBox(
-                            width:
-                                5), // Aggiungi spazio tra l'icona e il testo "Indietro".
+                        SizedBox(width: 5),
                         Text(
                           'Indietro',
                           style: Theme.of(context)

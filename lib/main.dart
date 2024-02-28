@@ -1,16 +1,12 @@
-import 'package:alfi_gest/providers/auth_provider.dart';
+import 'package:alfi_gest/providers/auth/auth_provider.dart';
 import 'package:alfi_gest/screens/auth/auth.dart';
-import 'package:alfi_gest/screens/auth/error_screen.dart';
-import 'package:alfi_gest/screens/auth/reset_password.dart';
-import 'package:alfi_gest/screens/clubs_screen.dart';
-import 'package:alfi_gest/screens/main_screen.dart';
-import 'package:alfi_gest/screens/members/form_member.dart';
-import 'package:alfi_gest/screens/members/members_screen.dart';
-import 'package:alfi_gest/screens/auth/success_screen.dart';
-import 'package:alfi_gest/screens/splash.dart';
+import 'package:alfi_gest/pages/auth/error_page.dart';
 import 'package:alfi_gest/screens/profile_screen.dart';
+import 'package:alfi_gest/screens/main_screen.dart';
+import 'package:alfi_gest/screens/splash.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'firebase_options.dart';
@@ -47,6 +43,15 @@ class MyApp extends StatelessWidget {
       theme: lightTheme,
       darkTheme: darkTheme,
       themeMode: ThemeMode.system,
+      localizationsDelegates: [
+        GlobalMaterialLocalizations.delegate,
+        GlobalWidgetsLocalizations.delegate,
+        GlobalCupertinoLocalizations.delegate,
+      ],
+      supportedLocales: [
+        const Locale('it', 'IT'), // Italian
+        // ... other locales the app supports
+      ],
       // Utilizziamo StreamBuilder per osservare lo stato di autenticazione di Firebase e visualizzare la schermata appropriata.
       home: StreamBuilder(
         stream: FirebaseAuth.instance.authStateChanges(),
@@ -56,9 +61,8 @@ class MyApp extends StatelessWidget {
           }
 
           if (snapshot.hasError) {
-            // Gestisci l'errore qui
             print(snapshot.error);
-            return ErrorScreen(); // sostituisci con la tua schermata di errore
+            return ErrorPage();
           }
 
           if (snapshot.hasData) {
@@ -70,13 +74,8 @@ class MyApp extends StatelessWidget {
       ),
       routes: {
         '/mainscreen': (context) => const MainScreen(),
-        '/socie': (context) => const MembersScreen(),
-        '/circoli': (context) => const ClubsScreen(),
-        '/singin': (context) => const CreateMemberForm(),
         '/login': (context) => const AuthScreen(),
-        '/reset-password': (context) => const ResetPasswordScreen(),
-        '/success-page': (context) => const SuccessScreen(),
-        '/error-page': (context) => const ErrorScreen(),
+        '/error-page': (context) => const ErrorPage(),
         '/profile': (context) => const ProfileScreen(),
       },
     );
