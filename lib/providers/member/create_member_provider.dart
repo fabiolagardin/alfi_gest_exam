@@ -1,7 +1,5 @@
-import 'dart:io';
 import 'package:alfi_gest/helpers/date_time.dart';
 import 'package:alfi_gest/models/enums.dart';
-import 'package:alfi_gest/models/member.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:alfi_gest/models/club.dart';
 import 'package:alfi_gest/services/club_service.dart';
@@ -34,8 +32,9 @@ class CreateMemberFormState {
   String updateUser;
   DateTime dateLastRenewal;
   DateTime expirationDate;
-  File? profileImageFile;
+  String? profileImageString;
   bool isSuspended;
+  bool isRejected;
   ReplaceCardMotivation replaceCardMotivation;
   String creditCard;
   String creditCardName;
@@ -69,8 +68,9 @@ class CreateMemberFormState {
     this.updateUser = '',
     required this.dateLastRenewal,
     required this.expirationDate,
-    this.profileImageFile,
+    this.profileImageString,
     this.isSuspended = false,
+    this.isRejected = false,
     this.replaceCardMotivation = ReplaceCardMotivation.nonAssegnato,
     this.creditCard = '',
     this.creditCardName = '',
@@ -98,12 +98,13 @@ class CreateMemberFormState {
     haveCardARCI = false;
     idClub = '';
     isSuspended = false;
+    isRejected = false;
     replaceCardMotivation = ReplaceCardMotivation.nonAssegnato;
     lastName = '';
     legalName = '';
     memberId = '';
     numberCard = '';
-    profileImageFile = null;
+    profileImageString = null;
     pronoun = Pronoun.nonAssegnato;
     taxIdCode = '';
     telephone = '';
@@ -139,8 +140,9 @@ class CreateMemberFormState {
     String? updateUser,
     DateTime? dateLastRenewal,
     DateTime? expirationDate,
-    File? profileImageFile,
+    String? profileImageString,
     bool? isSuspended,
+    bool? isRejected,
     ReplaceCardMotivation? replaceCardMotivation,
     String? creditCard,
     String? creditCardName,
@@ -175,9 +177,10 @@ class CreateMemberFormState {
       dateLastRenewal: dateLastRenewal ?? this.dateLastRenewal,
       expirationDate: expirationDate ?? DateHelper.calculateExpirationDate(),
       isSuspended: isSuspended ?? this.isSuspended,
+      isRejected: isRejected ?? this.isRejected,
       replaceCardMotivation:
           replaceCardMotivation ?? this.replaceCardMotivation,
-      profileImageFile: profileImageFile ?? this.profileImageFile,
+      profileImageString: profileImageString ?? this.profileImageString,
       creditCard: creditCard ?? this.creditCard,
       creditCardCvvCode: creditCardCvvCode ?? this.creditCardCvvCode,
       creditCardExpirationDate: creditCardExpirationDate ?? DateTime.now(),
@@ -198,6 +201,7 @@ class CreateMemberFormStateNotifier
             updateDate: DateTime.now(),
             dateLastRenewal: DateTime.now(),
             expirationDate: DateHelper.calculateExpirationDate(),
+            documentType: TypeDocument.identityCard,
           ),
         );
   void updateMemberId(String value) => state = state.copyWith(memberId: value);
@@ -223,7 +227,7 @@ class CreateMemberFormStateNotifier
       state = state.copyWith(consentWhatsApp: consentWhatsAppValue);
   void updateConsentNewsletter(bool value) =>
       state = state.copyWith(consentNewsletter: value);
-  void updateWorkingPartner(bool value) =>
+  void updateWorkingMember(bool value) =>
       state = state.copyWith(workingPartner: value);
   void updateVolunteerMember(bool value) =>
       state = state.copyWith(volunteerMember: value);
@@ -246,10 +250,12 @@ class CreateMemberFormStateNotifier
       state = state.copyWith(expirationDate: value);
   void updateIsSuspended(bool value) =>
       state = state.copyWith(isSuspended: value);
+  void updateIsRejected(bool value) =>
+      state = state.copyWith(isRejected: value);
   void updateReplaceCardMotivation(ReplaceCardMotivation value) =>
       state = state.copyWith(replaceCardMotivation: value);
-  void updateProfileImageFile(File? file) =>
-      state = state.copyWith(profileImageFile: file);
+  void updateProfileImageString(String? file) =>
+      state = state.copyWith(profileImageString: file);
   void updateCreditCard(String value) =>
       state = state.copyWith(creditCard: value);
   void updateCreditCardCvvCode(String value) =>

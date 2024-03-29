@@ -1,7 +1,14 @@
+import 'package:alfi_gest/core/result.dart';
 import 'package:alfi_gest/models/member.dart';
 import 'package:alfi_gest/services/member_service.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+
+final getImageProfileProvider =
+    FutureProvider.autoDispose.family<Result<String>, String>((ref, uid) async {
+  var result = await MemberService().getImageProfileUrl(uid);
+  return result;
+});
 
 final userProvider = StreamProvider<User?>(
   (ref) => FirebaseAuth.instance.authStateChanges(),

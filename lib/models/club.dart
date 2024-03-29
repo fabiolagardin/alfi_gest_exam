@@ -1,11 +1,11 @@
-import 'package:alfi_gest/helpers/result.dart';
+import 'package:alfi_gest/core/result.dart';
+import 'package:alfi_gest/models/identifiable.dart';
 
-import 'dart:io';
 import 'package:uuid/uuid.dart';
 
 var uuid = const Uuid();
 
-class Club {
+class Club implements Identifiable {
   Club({
     required this.idClub,
     required this.nameClub,
@@ -13,26 +13,37 @@ class Club {
     required this.address,
     required this.email,
     required this.idMemberManager,
-    required this.isSuspend,
+    required this.idClubSecretary,
+    required this.isSuspended,
+    required this.isClosed,
     required this.creationDate,
     required this.userCreation,
     required this.updateDate,
     required this.updateUser,
-    required this.profileImageFile,
+    required this.logoPath,
   });
 
-  final String idClub;
+  String idClub;
   final String nameClub;
   final String city;
   final String address;
   final String email;
   final String idMemberManager; // FK Responsabile
-  final bool isSuspend;
+  final String idClubSecretary; // FK Segretaria*
+  final bool isSuspended;
+  final bool isClosed;
   final DateTime creationDate;
   final String userCreation;
   final DateTime updateDate;
   final String updateUser;
-  final File? profileImageFile;
+  final String? logoPath;
+  @override
+  dynamic get id => idClub;
+  bool get isSuspend => isSuspended;
+  bool get isRemoved => isClosed;
+  String get title => nameClub;
+  String get subTitle => city.isEmpty ? "Città mancante" : city;
+  String get foreignKey => idMemberManager;
 
   Map<String, dynamic> toMap() {
     return {
@@ -42,12 +53,14 @@ class Club {
       'address': address,
       'email': email,
       'idMemberManager': idMemberManager,
-      'isSuspend': isSuspend,
+      'idClubSecretary': idClubSecretary,
+      'isSuspend': isSuspended,
+      'isClosed': isClosed,
       'creationDate': creationDate.millisecondsSinceEpoch,
       'userCreation': userCreation,
       'updateDate': updateDate.millisecondsSinceEpoch,
       'updateUser': updateUser,
-      'profileImage': profileImageFile?.path ?? "",
+      'profileImage': logoPath ?? "",
     };
   }
 
@@ -59,15 +72,34 @@ class Club {
       address: map['address'] as String,
       email: map['email'] as String,
       idMemberManager: map['idMemberManager'] as String,
-      isSuspend: map['isSuspend'] as bool,
+      idClubSecretary: map['idClubSecretary'] as String,
+      isSuspended: map['isSuspend'] as bool,
+      isClosed: map['isClosed'] as bool,
       creationDate:
           DateTime.fromMillisecondsSinceEpoch(map['creationDate'] as int),
       userCreation: map['userCreation'] as String,
       updateDate: DateTime.fromMillisecondsSinceEpoch(map['updateDate'] as int),
       updateUser: map['updateUser'] as String,
-      profileImageFile: (map['profileImage'] != null)
-          ? File(map['profileImage'] as String)
-          : null,
+      logoPath: (map['profileImage'] as String),
+    );
+  }
+
+  factory Club.empty() {
+    return Club(
+      idClub: '',
+      nameClub: '',
+      city: '',
+      address: '',
+      email: '',
+      idMemberManager: '',
+      idClubSecretary: '',
+      isSuspended: false,
+      isClosed: false,
+      creationDate: DateTime.now(),
+      userCreation: '',
+      updateDate: DateTime.now(),
+      updateUser: '',
+      logoPath: null,
     );
   }
 
@@ -94,11 +126,7 @@ class Club {
       errs.add("Inserire un email valida");
     }
 
-    if (club.profileImageFile == null) {
-      errs.add("Profilo Immagine obblatorio");
-    }
-
-    return errs.isNotEmpty
+    return errs.isEmpty
         ? Result(valid: true, data: club)
         : Result(valid: false, errors: errs, data: club);
   }

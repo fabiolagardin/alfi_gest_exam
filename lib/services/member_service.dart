@@ -1,17 +1,22 @@
-import 'package:alfi_gest/helpers/result.dart';
+import 'dart:io';
+
+import 'package:alfi_gest/core/result.dart';
 import 'package:alfi_gest/models/enums.dart';
 import 'package:alfi_gest/models/member.dart';
 import 'package:alfi_gest/models/user_role.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_functions/cloud_functions.dart';
-import 'package:flutter/services.dart';
+import 'package:firebase_storage/firebase_storage.dart';
+import 'package:path/path.dart' as path;
 
 class MemberService {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
-  final FirebaseAuth _auth = FirebaseAuth.instance;
 
   Future<Result<Member>> getMember(String uid) async {
+    if (uid.isEmpty) {
+      return Result(error: "UID non valido");
+    }
+
     final docRef = _firestore.collection('members').doc(uid);
     final docSnapshot = await docRef.get();
 
@@ -37,12 +42,33 @@ class MemberService {
       if (data.isEmpty) {
         return Result(
             error:
-                "Errore durante il recupero dei dati del club: ${docSnapshot.id}");
+                "Errore durante il recupero dei dati dell socia*: ${docSnapshot.id}");
       }
 
       final member = Member.fromMap(docSnapshot.id, data);
       members.add(member);
     }
+
+    return Result(valid: true, data: members);
+  }
+
+  Future<Result<List<Member>>> getSuspendedMembers() async {
+    final functions = FirebaseFunctions.instance;
+
+    // Call the getSuspendedMembers function
+    final result = await functions.httpsCallable('getSuspendedMembers').call();
+
+    var data = result.data as List<dynamic>;
+    if (data.isEmpty) {
+      return Result(
+          valid: false,
+          error: "Si è verificato un errore nel recupero delle socie* sospese");
+    }
+
+    // Map the data to a list of Member objects
+    final members = data.map((item) {
+      return Member.fromMap(item['id'], item as Map<String, dynamic>);
+    }).toList();
 
     return Result(valid: true, data: members);
   }
@@ -153,6 +179,32 @@ class MemberService {
     return Result(valid: true, data: true);
   }
 
+  Future<Result<bool>> updateProfile(String uid, Member updatedMember) async {
+    final functions = FirebaseFunctions.instance;
+
+    final member =
+        await functions.httpsCallable('getMember').call({'memberId': uid});
+    var existing = member.data as Map<String, dynamic>;
+    if (existing.containsValue("Socia* non trovata")) {
+      return Result(valid: false, error: "Socia* non trovata");
+    }
+
+    // Update the member in the database
+    final result = await functions
+        .httpsCallable('updateProfile')
+        .call({'memberId': uid, 'updatedMember': updatedMember.toMap()});
+
+    var data = result.data as Map<String, dynamic>;
+    if (data.containsValue(
+        "Un errore si è verificato durante l'aggiornamento del Profilo.")) {
+      return Result(
+          valid: false,
+          error:
+              "Un errore si è verificato durante l'aggiornamento del Profilo.");
+    }
+    return Result(valid: true, data: true);
+  }
+
   Future<Result<bool>> replaceMemberCard(String memberId, String newNumberCard,
       int newReplaceCardMotivation) async {
     HttpsCallable replaceCard =
@@ -211,6 +263,23 @@ class MemberService {
     return Result(valid: true, data: true);
   }
 
+  Future<Result<bool>> refuseMember(String memberId, bool isRefuse) async {
+    HttpsCallable refuseMember =
+        FirebaseFunctions.instance.httpsCallable('refuseMember');
+
+    final HttpsCallableResult result = await refuseMember
+        .call(<String, dynamic>{'memberId': memberId, 'isRejected': isRefuse});
+
+    var data = result.data as Map<String, dynamic>;
+    if (data.containsValue(
+        "Si è verificato un errore durante il rifiuto della socia*.")) {
+      return Result(
+          valid: false,
+          error: "Si è verificato un errore durante il rifiuto della socia*.");
+    }
+    return Result(valid: true, data: true);
+  }
+
   Future<Result<Member>> deleteMember(String uid) async {
     // Check if the member exists
     final functions = FirebaseFunctions.instance;
@@ -240,28 +309,25 @@ class MemberService {
     return Result(valid: true);
   }
 
-  Future<Result<Member>> setRoleMember(String uid, Role role) async {
-    // Check if the member exists
-    final memberResult = await getMember(uid);
-    if (!memberResult.isSuccess() || !memberResult.hasData) {
-      return Result(valid: false, error: "Socio non esitente");
+  Future<Result<bool>> setRoleMember(String uid, UserRole memberRole) async {
+    final functions = FirebaseFunctions.instance;
+    // Crea un nuovo membro nel database
+    final result = await functions
+        .httpsCallable('createRoleMember')
+        .call({'newRoleMember': memberRole.toMap()});
+    var data = result.data as Map<String, dynamic>;
+    if (data.containsValue(
+        "Si è verificato un errore durante la creazione del ruolo della socia*")) {
+      return Result(
+          valid: false,
+          error:
+              "Si è verificato un errore durante la creazione del ruolo della socia*");
     }
 
-    // Create the member's role document in the database
-    await _firestore.collection('roles').doc(uid).set(UserRole(
-            creationDate: DateTime.now(),
-            userCreation: uid,
-            updateDate: DateTime.now(),
-            updateUser: uid,
-            role: role)
-        .toMap());
-
-    var result = await getMember(uid);
-
-    return result;
+    return Result(valid: true, data: true);
   }
 
-  Future<Result<String>> getMemberRole(String uid) async {
+  Future<Result<Role>> getMemberRole(String uid) async {
     // Check if the member exists
     final memberResult = await getMember(uid);
     if (!memberResult.isSuccess() || !memberResult.hasData) {
@@ -275,10 +341,86 @@ class MemberService {
     }
 
     // Extract the role from the document
-    final role = await memberDocument.get("role") as int;
-    final roleString = Role.values[role].name;
+    final roleIndex = await memberDocument.get("role") as int;
+    final role = Role.values[roleIndex];
 
-    return Result(valid: true, data: roleString);
+    return Result(valid: true, data: role);
+  }
+
+  Future<Result<bool>> uploadImageProfile(
+      String filePath, String idMember) async {
+    File file = File(filePath);
+    try {
+      // Crea un riferimento a Firebase Storage
+      FirebaseStorage storage = FirebaseStorage.instance;
+
+      // Crea un riferimento alla cartella
+      Reference folderRef =
+          storage.ref().child('users_image_profile/$idMember');
+
+      // Ottieni la lista dei file nella cartella
+      ListResult result = await folderRef.listAll();
+
+      // Elimina tutti i file nella cartella
+      for (var fileRef in result.items) {
+        await fileRef.delete();
+      }
+
+      // Ottieni il nome del file dal percorso del file
+      String fileName = path.basename(file.path);
+
+      // Crea un riferimento al file che vuoi caricare
+      Reference ref =
+          storage.ref().child('users_image_profile/$idMember/$fileName');
+
+      // Carica il file su Firebase Storage
+      UploadTask uploadTask = ref.putFile(file);
+
+      // Aspetta che il caricamento sia completato
+      await uploadTask.whenComplete(() => null);
+      print('Upload complete.');
+
+      // Restituisci un Result con valore true per indicare che l'upload è stato completato con successo
+      return Result<bool>.ok(value: true, data: true);
+    } catch (e) {
+      print(e);
+
+      // Restituisci un Result con l'errore per indicare che l'upload è fallito
+      return Result<bool>.fail(error: e.toString());
+    }
+  }
+
+  Future<Result<String>> getImageProfileUrl(String idMember) async {
+    try {
+      // Crea un riferimento a Firebase Storage
+      FirebaseStorage storage = FirebaseStorage.instance;
+
+      // Crea un riferimento alla cartella
+      Reference folderRef =
+          storage.ref().child('users_image_profile/$idMember');
+
+      // Ottieni la lista dei file nella cartella
+      ListResult result = await folderRef.listAll();
+
+      // Controlla se la cartella contiene almeno un file
+      if (result.items.isEmpty) {
+        return Result<String>.fail(error: "Nessun file trovato nella cartella");
+      }
+
+      // Crea un riferimento al primo file nella cartella
+      Reference fileRef = result.items.first;
+
+      // Ottieni l'URL del file
+      String downloadURL = await fileRef.getDownloadURL();
+
+      // Restituisci un Result con l'URL del file
+      return Result<String>.ok(value: true, data: downloadURL);
+    } catch (e) {
+      print(e);
+
+      // Restituisci un Result con l'errore
+      return Result<String>.fail(error: e.toString());
+    }
   }
 
   Result<String> compareRoleWithSting(String role) {

@@ -43,7 +43,7 @@ class ResetPasswordPage extends ConsumerWidget {
                       mainAxisSize: MainAxisSize.min,
                       children: [
                         TextFormField(
-                          initialValue: authController.state.email,
+                          initialValue: authController.email,
                           decoration: InputDecoration(
                             labelText: 'Email',
                             fillColor:

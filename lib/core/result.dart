@@ -14,7 +14,7 @@ class Result<T> {
   String? error;
   String? message;
   T? data;
-
+  bool get isOk => valid;
   bool isSuccess() {
     return valid;
   }
@@ -39,8 +39,10 @@ class Result<T> {
     return data;
   }
 
-  factory Result.ok({required bool value}) => Result(valid: value);
-  factory Result.fail({required String error}) => Result(error: error);
+  factory Result.ok({required bool value, required T data}) =>
+      Result(valid: value, data: data);
+  factory Result.fail({required String error}) =>
+      Result(error: error, valid: false);
   factory Result.fails({required List<String> errors}) =>
       Result(errors: errors);
 }

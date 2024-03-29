@@ -1,13 +1,19 @@
 import 'package:alfi_gest/helpers/date_time.dart';
-import 'package:alfi_gest/helpers/result.dart';
+import 'package:alfi_gest/core/result.dart';
 import 'package:alfi_gest/helpers/string_helper.dart';
+import 'package:alfi_gest/models/user_role.dart';
 import 'package:alfi_gest/models/enums.dart';
 import 'package:alfi_gest/models/member.dart';
 import 'package:alfi_gest/providers/auth/user_data_provider.dart';
-import 'package:alfi_gest/providers/clubs/clubs_provder.dart';
+import 'package:alfi_gest/providers/clubs/clubs_provider.dart';
 import 'package:alfi_gest/providers/member/create_member_provider.dart';
+import 'package:alfi_gest/providers/member/member_data_provider.dart';
+import 'package:alfi_gest/providers/member/member_role_provider.dart';
 import 'package:alfi_gest/screens/main_screen.dart';
 import 'package:alfi_gest/services/member_service.dart';
+import 'package:alfi_gest/widgets/clubs/clubs_select.dart';
+import 'package:alfi_gest/widgets/custom_snack_bars.dart';
+import 'package:alfi_gest/widgets/tab_bar_custom.dart';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -28,6 +34,7 @@ class CreateMemberPageState extends ConsumerState<CreateMemberPage>
   final TextEditingController docTypeController = TextEditingController();
   final TextEditingController expirationDateController =
       TextEditingController();
+  final TextEditingController clubController = TextEditingController();
   final _formKey = GlobalKey<FormState>();
   final _pageController = PageController();
   late TabController _tabController;
@@ -49,15 +56,23 @@ class CreateMemberPageState extends ConsumerState<CreateMemberPage>
     final formState = ref.watch(createMemberFormProvider);
     final user = ref.watch(userProvider);
     final isMemberPage = ref.watch(isMemberPageProvider);
-    final clubsAsyncValue = ref.watch(clubsProvider);
+    final clubs = ref.watch(filteredClubsProvider);
     final isReadyFor = ref.watch(isMemberReadyFor);
     final isLoading = ref.watch(isLoadingProvider);
     final isMemberUpdate = ref.watch(isMemberDetailsUpdatePageProvider);
-
+    final listTabsLabels = ['Anagrafica', 'Contatti', 'Circolo'];
+    final userRole = ref.watch(roleProvider);
+    final userData = ref.watch(memberProvider);
     // Update the pronController and docTypeController text based on the selected pronoun
     pronController.text = displayStringForPronoun(formState.pronoun);
     docTypeController.text =
         displayStringForTypeDocument(formState.documentType);
+    expirationDateController.text =
+        DateFormat('dd-MM-yyyy').format(formState.birthDate);
+    final matchingClubs =
+        clubs.where((element) => element.idClub == formState.idClub).toList();
+    clubController.text =
+        (matchingClubs.isNotEmpty) ? matchingClubs.first.nameClub : '';
 
     return Scaffold(
       appBar: AppBar(
@@ -75,32 +90,84 @@ class CreateMemberPageState extends ConsumerState<CreateMemberPage>
         ),
         leading: Padding(
           padding: const EdgeInsets.fromLTRB(0, 28, 0, 0),
-          child: TextButton(
-            onPressed: () {
-              ref.read(isMemberPageProvider.notifier).state = true;
-              ref.read(isMemberDetailsUpdatePageProvider.notifier).state =
-                  false;
-              formState.reset();
-            },
-            child: Text(
-              "Annulla",
-              style: Theme.of(context).textTheme.bodyLarge!.copyWith(
-                    color: Theme.of(context).colorScheme.secondary,
+          child: isLoading
+              ? Padding(
+                  padding: const EdgeInsets.fromLTRB(22, 14, 0, 0),
+                  child: Text(
+                    "Annulla",
+                    style: Theme.of(context).textTheme.bodyLarge!.copyWith(
+                          color: Theme.of(context)
+                              .colorScheme
+                              .secondary
+                              .withOpacity(0.5),
+                        ),
                   ),
-            ),
-          ),
+                )
+              : TextButton(
+                  onPressed: () {
+                    if (isMemberUpdate) {
+                      ref.read(isMemberDetailsPageProvider.notifier).state =
+                          true;
+                      ref.read(isMemberPageProvider.notifier).state = false;
+                    } else {
+                      ref.read(isMemberPageProvider.notifier).state = true;
+                      ref.read(isMemberDetailsPageProvider.notifier).state =
+                          false;
+                    }
+                    ref.read(isMainAppBarProvider.notifier).state = false;
+
+                    formState.reset();
+                  },
+                  child: Text(
+                    "Annulla",
+                    style: Theme.of(context).textTheme.bodyLarge!.copyWith(
+                          color: Theme.of(context).colorScheme.secondary,
+                        ),
+                  ),
+                ),
         ),
         leadingWidth: 100,
         actions: [
           Padding(
             padding: const EdgeInsets.fromLTRB(0, 28, 0, 0),
-            child: isLoadingProvider == true
+            child: isLoading == true
                 ? const CircularProgressIndicator()
-                : isReadyFor || !isLoading
+                : isReadyFor && !isLoading
                     ? TextButton(
                         onPressed: () async {
-                          //Scafolod
-                          var sm = ScaffoldMessenger.of(context);
+                          // Valida il form su ciascuna pagina
+                          for (int i = 0; i < listTabsLabels.length; i++) {
+                            _pageController.jumpToPage(i);
+                            _tabController.animateTo(i);
+
+                            // Aspetta un frame per assicurarti che la pagina sia nel tree dei widget
+                            await Future.delayed(
+                                const Duration(milliseconds: 100));
+
+                            // Valida il form
+                            var formIsValid = _formKey.currentState!.validate();
+
+                            // Se il form non è valido, mostra un dialogo di allerta
+                            if (!formIsValid) {
+                              showDialog(
+                                context: context,
+                                builder: (context) => AlertDialog(
+                                  title: const Text('Errore di validazione'),
+                                  content: const Text(
+                                      'Si prega di correggere gli errori nel modulo.'),
+                                  actions: <Widget>[
+                                    TextButton(
+                                      onPressed: () =>
+                                          Navigator.of(context).pop(),
+                                      child: const Text('OK'),
+                                    ),
+                                  ],
+                                ),
+                              );
+                              return; // Interrompi l'esecuzione se il form non è valido
+                            }
+                          }
+
                           // Imposta isLoading su true
                           ref.read(isLoadingProvider.notifier).state = true;
 
@@ -126,7 +193,10 @@ class CreateMemberPageState extends ConsumerState<CreateMemberPage>
                             workingPartner: formState.workingPartner,
                             volunteerMember: formState.volunteerMember,
                             numberCard: formState.numberCard,
-                            idClub: formState.idClub,
+                            idClub: userRole == Role.responsabileCircolo &&
+                                    userData != null
+                                ? userData.idClub
+                                : formState.idClub,
                             haveCardARCI: formState.haveCardARCI,
                             memberSince: DateTime.now(),
                             creationDate: DateTime.now(),
@@ -135,10 +205,11 @@ class CreateMemberPageState extends ConsumerState<CreateMemberPage>
                             updateUser: "",
                             dateLastRenewal: DateTime.now(),
                             expirationDate: formState.expirationDate,
-                            profileImageFile: formState.profileImageFile,
+                            profileImageString: formState.profileImageString,
                             replaceCardMotivation:
                                 formState.replaceCardMotivation,
                             isSuspended: formState.isSuspended,
+                            isRejected: formState.isRejected,
                           );
 
                           // Valida i dati
@@ -176,24 +247,34 @@ class CreateMemberPageState extends ConsumerState<CreateMemberPage>
                             final memberId = userResult.data == "update"
                                 ? formState.memberId
                                 : userResult.data;
-
+                            final newRole = UserRole(
+                              idUserRole: memberId!,
+                              role: Role.socia,
+                              creationDate: DateTime.now(),
+                              userCreation: memberId,
+                              updateDate: DateTime.now(),
+                              updateUser: memberId,
+                            );
                             member.userCreation = user.value!.uid;
                             member.updateUser = user.value!.uid;
 
                             final result = isMemberUpdate
                                 ? await MemberService()
-                                    .updateMember(memberId!, member)
+                                    .updateMember(memberId, member)
                                 : await MemberService()
-                                    .createMember(memberId!, member);
+                                    .createMember(memberId, member);
+
                             final setRole = await MemberService()
-                                .setRoleMember(memberId, Role.socia);
+                                .setRoleMember(memberId, newRole);
                             if (!mounted) {
                               return;
                             }
                             // Gestisci il risultato
-                            if (result.valid) {
+                            if (result.valid && setRole.valid) {
                               ref.read(isLoadingProvider.notifier).state =
                                   false;
+                              ref.read(isMainAppBarProvider.notifier).state =
+                                  true;
                               ref.read(isMemberPageProvider.notifier).state =
                                   !isMemberPage;
                               if (isMemberUpdate)
@@ -201,16 +282,16 @@ class CreateMemberPageState extends ConsumerState<CreateMemberPage>
                                     .read(isMemberDetailsUpdatePageProvider
                                         .notifier)
                                     .state = false;
+                              CustomSnackBar.showSuccessSnackBar(
+                                  context: context,
+                                  message: isMemberUpdate
+                                      ? "Socia* modificata con successo"
+                                      : "Socia creata con successo");
                             } else {
-                              // Errore: mostra un messaggio di errore
-                              final snackBar = SnackBar(
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(4),
-                                  ),
-                                  content: Text(result.error ??
-                                      'Si è verificato un errore sconosciuto.'),
-                                  behavior: SnackBarBehavior.floating);
-                              sm.showSnackBar(snackBar);
+                              CustomSnackBar.showErrorSnackBar(
+                                context: context,
+                                message: "${result.error} ${setRole.error}",
+                              );
                               ref.read(isLoadingProvider.notifier).state =
                                   false;
                             }
@@ -245,25 +326,24 @@ class CreateMemberPageState extends ConsumerState<CreateMemberPage>
                               .textTheme
                               .bodyLarge!
                               .copyWith(
-                                color: isMemberUpdate
-                                    ? Theme.of(context).colorScheme.secondary
-                                    : Theme.of(context)
+                                  color: isMemberUpdate
+                                      ? Theme.of(context).colorScheme.secondary
+                                      : Theme.of(context)
+                                          .colorScheme
+                                          .secondary),
+                        ),
+                      )
+                    : Padding(
+                        padding: const EdgeInsets.only(right: 12),
+                        child: Text(
+                          "Salva",
+                          style:
+                              Theme.of(context).textTheme.bodyLarge!.copyWith(
+                                    color: Theme.of(context)
                                         .colorScheme
                                         .secondary
                                         .withOpacity(0.5),
-                              ),
-                        ),
-                      )
-                    : TextButton(
-                        onPressed: () {},
-                        child: Text(
-                          "Salva",
-                          style: Theme.of(context)
-                              .textTheme
-                              .bodyLarge!
-                              .copyWith(
-                                color: Theme.of(context).colorScheme.secondary,
-                              ),
+                                  ),
                         ),
                       ),
           ),
@@ -278,42 +358,35 @@ class CreateMemberPageState extends ConsumerState<CreateMemberPage>
               child: GestureDetector(
                 onTap: () {
                   FocusScope.of(context).unfocus();
+
+                  formState.numberCard.isNotEmpty
+                      ? ref.read(isMemberReadyFor.notifier).state = true
+                      : ref.read(isMemberReadyFor.notifier).state = false;
                 },
                 child: DefaultTabController(
                   length: 3,
                   child: Column(
                     children: [
-                      TabBar(
-                        controller: _tabController,
-                        tabs: const [
-                          Tab(text: 'Anagrafica'),
-                          Tab(text: 'Contatti'),
-                          Tab(text: 'Circolo'),
-                        ],
-                        labelColor: Theme.of(context).colorScheme.primary,
-                        unselectedLabelColor:
-                            Theme.of(context).colorScheme.onSurfaceVariant,
-                        indicatorColor: Theme.of(context).colorScheme.primary,
-                        onTap: (index) {
-                          // Impedisce il cambio di tab se la validazione fallisce
-                          if (_formKey.currentState!.validate()) {
-                            _pageController.jumpToPage(index);
+                      CustomTabBar(
+                        tabController: _tabController,
+                        tabsLabels: listTabsLabels,
+                        formKey: _formKey,
+                        onTapTab: (index) {
+                          _formKey.currentState!.validate();
+
+                          // se tutti i 3 tab hanno superto la validazione allora ref.read(isMemberReadyFor.notifier).state = true;
+                          if (index == 2 && formState.numberCard.isNotEmpty) {
+                            ref.read(isMemberReadyFor.notifier).state = true;
                           } else {
-                            // Forzare il TabController a rimanere sul tab corrente
-                            _tabController
-                                .animateTo(_tabController.previousIndex);
+                            ref.read(isMemberReadyFor.notifier).state = false;
                           }
+                          _pageController.jumpToPage(index);
                         },
                       ),
                       Expanded(
                         child: PageView(
                           controller: _pageController,
                           physics: NeverScrollableScrollPhysics(),
-                          onPageChanged: (index) {
-                            setState(() {
-                              _tabController.index = index;
-                            });
-                          },
                           children: [
                             // Primo tab: Dati anagrafici
                             SingleChildScrollView(
@@ -332,6 +405,30 @@ class CreateMemberPageState extends ConsumerState<CreateMemberPage>
                                             .surfaceVariant,
                                         filled: true,
                                         border: InputBorder.none,
+                                        focusedBorder: UnderlineInputBorder(
+                                          borderSide: BorderSide(
+                                              color: Theme.of(context)
+                                                  .colorScheme
+                                                  .primary),
+                                        ),
+                                        errorBorder: UnderlineInputBorder(
+                                          borderSide: BorderSide(
+                                              color: Theme.of(context)
+                                                  .colorScheme
+                                                  .error),
+                                        ),
+                                        focusedErrorBorder:
+                                            UnderlineInputBorder(
+                                          borderSide: BorderSide(
+                                              color: Theme.of(context)
+                                                  .colorScheme
+                                                  .error),
+                                        ),
+                                        labelStyle: TextStyle(
+                                          color: Theme.of(context)
+                                              .colorScheme
+                                              .secondary,
+                                        ),
                                       ),
                                       style: Theme.of(context)
                                           .textTheme
@@ -368,6 +465,30 @@ class CreateMemberPageState extends ConsumerState<CreateMemberPage>
                                             .surfaceVariant,
                                         filled: true,
                                         border: InputBorder.none,
+                                        focusedBorder: UnderlineInputBorder(
+                                          borderSide: BorderSide(
+                                              color: Theme.of(context)
+                                                  .colorScheme
+                                                  .primary),
+                                        ),
+                                        errorBorder: UnderlineInputBorder(
+                                          borderSide: BorderSide(
+                                              color: Theme.of(context)
+                                                  .colorScheme
+                                                  .error),
+                                        ),
+                                        focusedErrorBorder:
+                                            UnderlineInputBorder(
+                                          borderSide: BorderSide(
+                                              color: Theme.of(context)
+                                                  .colorScheme
+                                                  .error),
+                                        ),
+                                        labelStyle: TextStyle(
+                                          color: Theme.of(context)
+                                              .colorScheme
+                                              .secondary,
+                                        ),
                                       ),
                                       style: Theme.of(context)
                                           .textTheme
@@ -394,6 +515,30 @@ class CreateMemberPageState extends ConsumerState<CreateMemberPage>
                                             .surfaceVariant,
                                         filled: true,
                                         border: InputBorder.none,
+                                        focusedBorder: UnderlineInputBorder(
+                                          borderSide: BorderSide(
+                                              color: Theme.of(context)
+                                                  .colorScheme
+                                                  .primary),
+                                        ),
+                                        errorBorder: UnderlineInputBorder(
+                                          borderSide: BorderSide(
+                                              color: Theme.of(context)
+                                                  .colorScheme
+                                                  .error),
+                                        ),
+                                        focusedErrorBorder:
+                                            UnderlineInputBorder(
+                                          borderSide: BorderSide(
+                                              color: Theme.of(context)
+                                                  .colorScheme
+                                                  .error),
+                                        ),
+                                        labelStyle: TextStyle(
+                                          color: Theme.of(context)
+                                              .colorScheme
+                                              .secondary,
+                                        ),
                                       ),
                                       style: Theme.of(context)
                                           .textTheme
@@ -560,19 +705,17 @@ class CreateMemberPageState extends ConsumerState<CreateMemberPage>
                                                 .color
                                                 ?.withOpacity(1.0),
                                           ),
+                                          errorBorder: UnderlineInputBorder(
+                                            borderSide: BorderSide(
+                                                color: Theme.of(context)
+                                                    .colorScheme
+                                                    .error),
+                                          ),
                                           labelStyle: TextStyle(
                                             color: Theme.of(context)
                                                 .colorScheme
                                                 .secondary
                                                 .withOpacity(1.0),
-                                            fontWeight: Theme.of(context)
-                                                .textTheme
-                                                .bodyMedium
-                                                ?.fontWeight,
-                                            fontSize: Theme.of(context)
-                                                .textTheme
-                                                .bodyMedium
-                                                ?.fontSize,
                                           ),
                                           fillColor: Theme.of(context)
                                               .colorScheme
@@ -592,8 +735,7 @@ class CreateMemberPageState extends ConsumerState<CreateMemberPage>
                                     ),
                                     const SizedBox(height: 11),
                                     TextFormField(
-                                      initialValue: DateFormat('dd-MM-yyyy')
-                                          .format(formState.birthDate),
+                                      controller: expirationDateController,
 
                                       decoration: InputDecoration(
                                         labelText: 'Data di nascita *',
@@ -604,6 +746,18 @@ class CreateMemberPageState extends ConsumerState<CreateMemberPage>
                                         border: InputBorder.none,
                                         suffixIcon:
                                             const Icon(Icons.calendar_today),
+                                        errorBorder: UnderlineInputBorder(
+                                          borderSide: BorderSide(
+                                              color: Theme.of(context)
+                                                  .colorScheme
+                                                  .error),
+                                        ),
+                                        labelStyle: TextStyle(
+                                          color: Theme.of(context)
+                                              .colorScheme
+                                              .secondary
+                                              .withOpacity(1.0),
+                                        ),
                                       ),
                                       readOnly:
                                           true, // Impedisce la digitazione manuale della data
@@ -618,6 +772,7 @@ class CreateMemberPageState extends ConsumerState<CreateMemberPage>
                                         );
 
                                         if (pickedDate != null) {
+                                          formState.birthDate = pickedDate;
                                           // Aggiorna lo stato del provider con la nuova data di nascita
                                           ref
                                               .read(createMemberFormProvider
@@ -655,6 +810,30 @@ class CreateMemberPageState extends ConsumerState<CreateMemberPage>
                                             .surfaceVariant,
                                         filled: true,
                                         border: InputBorder.none,
+                                        focusedBorder: UnderlineInputBorder(
+                                          borderSide: BorderSide(
+                                              color: Theme.of(context)
+                                                  .colorScheme
+                                                  .primary),
+                                        ),
+                                        errorBorder: UnderlineInputBorder(
+                                          borderSide: BorderSide(
+                                              color: Theme.of(context)
+                                                  .colorScheme
+                                                  .error),
+                                        ),
+                                        focusedErrorBorder:
+                                            UnderlineInputBorder(
+                                          borderSide: BorderSide(
+                                              color: Theme.of(context)
+                                                  .colorScheme
+                                                  .error),
+                                        ),
+                                        labelStyle: TextStyle(
+                                          color: Theme.of(context)
+                                              .colorScheme
+                                              .secondary,
+                                        ),
                                       ),
                                       style: Theme.of(context)
                                           .textTheme
@@ -830,19 +1009,17 @@ class CreateMemberPageState extends ConsumerState<CreateMemberPage>
                                                 .color
                                                 ?.withOpacity(1.0),
                                           ),
+                                          errorBorder: UnderlineInputBorder(
+                                            borderSide: BorderSide(
+                                                color: Theme.of(context)
+                                                    .colorScheme
+                                                    .error),
+                                          ),
                                           labelStyle: TextStyle(
                                             color: Theme.of(context)
                                                 .colorScheme
                                                 .secondary
                                                 .withOpacity(1.0),
-                                            fontWeight: Theme.of(context)
-                                                .textTheme
-                                                .bodyMedium
-                                                ?.fontWeight,
-                                            fontSize: Theme.of(context)
-                                                .textTheme
-                                                .bodyMedium
-                                                ?.fontSize,
                                           ),
                                           fillColor: Theme.of(context)
                                               .colorScheme
@@ -876,6 +1053,30 @@ class CreateMemberPageState extends ConsumerState<CreateMemberPage>
                                             .surfaceVariant,
                                         filled: true,
                                         border: InputBorder.none,
+                                        focusedBorder: UnderlineInputBorder(
+                                          borderSide: BorderSide(
+                                              color: Theme.of(context)
+                                                  .colorScheme
+                                                  .primary),
+                                        ),
+                                        errorBorder: UnderlineInputBorder(
+                                          borderSide: BorderSide(
+                                              color: Theme.of(context)
+                                                  .colorScheme
+                                                  .error),
+                                        ),
+                                        focusedErrorBorder:
+                                            UnderlineInputBorder(
+                                          borderSide: BorderSide(
+                                              color: Theme.of(context)
+                                                  .colorScheme
+                                                  .error),
+                                        ),
+                                        labelStyle: TextStyle(
+                                          color: Theme.of(context)
+                                              .colorScheme
+                                              .secondary,
+                                        ),
                                       ),
                                       style: Theme.of(context)
                                           .textTheme
@@ -924,6 +1125,29 @@ class CreateMemberPageState extends ConsumerState<CreateMemberPage>
                                           .surfaceVariant,
                                       filled: true,
                                       border: InputBorder.none,
+                                      focusedBorder: UnderlineInputBorder(
+                                        borderSide: BorderSide(
+                                            color: Theme.of(context)
+                                                .colorScheme
+                                                .primary),
+                                      ),
+                                      errorBorder: UnderlineInputBorder(
+                                        borderSide: BorderSide(
+                                            color: Theme.of(context)
+                                                .colorScheme
+                                                .error),
+                                      ),
+                                      focusedErrorBorder: UnderlineInputBorder(
+                                        borderSide: BorderSide(
+                                            color: Theme.of(context)
+                                                .colorScheme
+                                                .error),
+                                      ),
+                                      labelStyle: TextStyle(
+                                        color: Theme.of(context)
+                                            .colorScheme
+                                            .secondary,
+                                      ),
                                     ),
                                     style: Theme.of(context)
                                         .textTheme
@@ -960,6 +1184,29 @@ class CreateMemberPageState extends ConsumerState<CreateMemberPage>
                                           .surfaceVariant,
                                       filled: true,
                                       border: InputBorder.none,
+                                      focusedBorder: UnderlineInputBorder(
+                                        borderSide: BorderSide(
+                                            color: Theme.of(context)
+                                                .colorScheme
+                                                .primary),
+                                      ),
+                                      errorBorder: UnderlineInputBorder(
+                                        borderSide: BorderSide(
+                                            color: Theme.of(context)
+                                                .colorScheme
+                                                .error),
+                                      ),
+                                      focusedErrorBorder: UnderlineInputBorder(
+                                        borderSide: BorderSide(
+                                            color: Theme.of(context)
+                                                .colorScheme
+                                                .error),
+                                      ),
+                                      labelStyle: TextStyle(
+                                        color: Theme.of(context)
+                                            .colorScheme
+                                            .secondary,
+                                      ),
                                     ),
                                     style: Theme.of(context)
                                         .textTheme
@@ -991,6 +1238,29 @@ class CreateMemberPageState extends ConsumerState<CreateMemberPage>
                                           .surfaceVariant,
                                       filled: true,
                                       border: InputBorder.none,
+                                      focusedBorder: UnderlineInputBorder(
+                                        borderSide: BorderSide(
+                                            color: Theme.of(context)
+                                                .colorScheme
+                                                .primary),
+                                      ),
+                                      errorBorder: UnderlineInputBorder(
+                                        borderSide: BorderSide(
+                                            color: Theme.of(context)
+                                                .colorScheme
+                                                .error),
+                                      ),
+                                      focusedErrorBorder: UnderlineInputBorder(
+                                        borderSide: BorderSide(
+                                            color: Theme.of(context)
+                                                .colorScheme
+                                                .error),
+                                      ),
+                                      labelStyle: TextStyle(
+                                        color: Theme.of(context)
+                                            .colorScheme
+                                            .secondary,
+                                      ),
                                     ),
                                     style: Theme.of(context)
                                         .textTheme
@@ -1043,6 +1313,7 @@ class CreateMemberPageState extends ConsumerState<CreateMemberPage>
                                                   isConsentWhatsApp);
                                         },
                                       ),
+                                      SizedBox(width: 10),
                                       Text(
                                         'Whatsapp',
                                         style: Theme.of(context)
@@ -1070,6 +1341,7 @@ class CreateMemberPageState extends ConsumerState<CreateMemberPage>
                                                   isConsentNewsletter);
                                         },
                                       ),
+                                      SizedBox(width: 10),
                                       Text(
                                         'Newsletter',
                                         style: Theme.of(context)
@@ -1088,157 +1360,275 @@ class CreateMemberPageState extends ConsumerState<CreateMemberPage>
                               ),
                             ),
                             // Terzo Tab: Circolo
-                            Padding(
-                              padding: const EdgeInsets.symmetric(
-                                  vertical: 20, horizontal: 16),
-                              child: Column(
-                                children: [
-                                  clubsAsyncValue.when(
-                                    data: (clubs) =>
-                                        DropdownButtonFormField<String>(
-                                      value: formState.idClub != null &&
-                                              clubs.any((club) =>
-                                                  club.idClub ==
-                                                  formState.idClub)
-                                          ? formState.idClub
-                                          : null, // Assicurati che il valore corrente esista nell'elenco, altrimenti imposta su null
-                                      onChanged: (String? newValue) {
-                                        ref
-                                            .read(createMemberFormProvider
-                                                .notifier)
-                                            .updateIdClub(newValue ?? '');
-                                      },
-                                      items: clubs
-                                          .map<DropdownMenuItem<String>>(
-                                              (club) {
-                                        return DropdownMenuItem<String>(
-                                          value: club.idClub,
-                                          child: Text(club.nameClub),
-                                        );
-                                      }).toList(),
-                                      decoration: InputDecoration(
-                                        labelText: 'Circolo',
-                                        fillColor: Theme.of(context)
-                                            .colorScheme
-                                            .surfaceVariant,
-                                        filled: true,
-                                        border: InputBorder.none,
-                                      ),
-                                    ),
-                                    loading: () =>
-                                        const CircularProgressIndicator(),
-                                    error: (e, _) => Text('Error: $e'),
-                                  ),
-                                  const SizedBox(height: 11),
-                                  TextFormField(
-                                    initialValue: DateFormat('dd-MM-yyyy')
-                                        .format(formState.expirationDate),
-                                    decoration: InputDecoration(
-                                      labelText: 'Data di Scadenza',
-                                      fillColor: Theme.of(context)
-                                          .colorScheme
-                                          .surfaceVariant,
-                                      filled: true,
-                                      border: InputBorder.none,
-                                    ),
-                                    readOnly: true,
-                                    style: Theme.of(context)
-                                        .textTheme
-                                        .bodyMedium!
-                                        .copyWith(
-                                          color: Theme.of(context)
-                                              .colorScheme
-                                              .secondary,
-                                        ),
-                                    validator: (value) {
-                                      if (value == null ||
-                                          value.trim().isEmpty) {
-                                        return 'Campo obbligatorio!';
-                                      }
-                                      return null;
-                                    },
-                                  ),
-                                  const SizedBox(height: 11),
-                                  TextFormField(
-                                    initialValue: formState.numberCard,
-                                    decoration: InputDecoration(
-                                      labelText: 'Numero Tessera *',
-                                      fillColor: Theme.of(context)
-                                          .colorScheme
-                                          .surfaceVariant,
-                                      filled: true,
-                                      border: InputBorder.none,
-                                    ),
-                                    readOnly: isMemberUpdate ? true : false,
-                                    style: Theme.of(context)
-                                        .textTheme
-                                        .bodyMedium!
-                                        .copyWith(
-                                          color: Theme.of(context)
-                                              .colorScheme
-                                              .secondary,
-                                        ),
-                                    keyboardType: TextInputType.number,
-                                    inputFormatters: [
-                                      FilteringTextInputFormatter.digitsOnly
-                                    ],
-                                    onChanged: (value) {
-                                      ref
-                                          .read(
-                                              createMemberFormProvider.notifier)
-                                          .updateNumberCard(value);
-                                    },
-                                    validator: (value) {
-                                      if (value == null ||
-                                          value.trim().isEmpty) {
-                                        return 'Campo obbligatorio!';
-                                      }
-                                      if (value.length < 6) {
-                                        return 'Il numero della tessera deve essere di almeno 6 cifre';
-                                      }
-                                      if (value.length > 6) {
-                                        return 'Il numero della tessera deve essere di al massimo 6 cifre';
-                                      }
-                                      //deve essere solo numero
-                                      if (!RegExp(r'^[0-9]*$')
-                                          .hasMatch(value)) {
-                                        return 'Il numero della tessera deve essere solo numerico';
-                                      }
-                                      return null;
-                                    },
-                                  ),
-                                  const SizedBox(height: 22),
-                                  Row(
-                                    mainAxisAlignment: MainAxisAlignment.start,
-                                    children: [
-                                      Switch(
-                                        value: formState.haveCardARCI,
-                                        onChanged: (bool haveCardARCI) {
-                                          ref
-                                              .read(createMemberFormProvider
-                                                  .notifier)
-                                              .updateHaveCardARCI(haveCardARCI);
-                                        },
-                                      ),
-                                      Text(
-                                        'Tessera ARCI',
-                                        style: Theme.of(context)
-                                            .textTheme
-                                            .bodyMedium!
-                                            .copyWith(
+                            userData == null ||
+                                    clubs.isEmpty ||
+                                    userRole == null
+                                ? const Center(
+                                    child: CircularProgressIndicator(),
+                                  )
+                                : Padding(
+                                    padding: const EdgeInsets.symmetric(
+                                        vertical: 20, horizontal: 16),
+                                    child: Column(
+                                      children: [
+                                        userRole == Role.responsabileCircolo
+                                            ? TextFormField(
+                                                decoration: InputDecoration(
+                                                  labelText: 'Circolo *',
+                                                  filled: true,
+                                                  border: InputBorder.none,
+                                                  errorBorder:
+                                                      UnderlineInputBorder(
+                                                    borderSide: BorderSide(
+                                                        color: Theme.of(context)
+                                                            .colorScheme
+                                                            .error),
+                                                  ),
+                                                  labelStyle: TextStyle(
+                                                    color: Theme.of(context)
+                                                        .colorScheme
+                                                        .secondary
+                                                        .withOpacity(1.0),
+                                                  ),
+                                                  fillColor: Theme.of(context)
+                                                      .colorScheme
+                                                      .surfaceVariant
+                                                      .withOpacity(1.0),
+                                                ),
+                                                enabled: false,
+                                                readOnly: true,
+                                                style: Theme.of(context)
+                                                    .textTheme
+                                                    .bodyMedium!
+                                                    .copyWith(
+                                                      color: Theme.of(context)
+                                                          .colorScheme
+                                                          .secondary,
+                                                    ),
+                                                initialValue: clubs
+                                                    .where((c) =>
+                                                        c.idClub ==
+                                                        userData.idClub)
+                                                    .first
+                                                    .nameClub,
+                                              )
+                                            : ClubsSelectWidget(
+                                                clubController: clubController,
+                                                clubs: clubs,
+                                                isTextField: true,
+                                              ),
+                                        const SizedBox(height: 11),
+                                        TextFormField(
+                                          initialValue: DateFormat('dd-MM-yyyy')
+                                              .format(formState.expirationDate),
+                                          decoration: InputDecoration(
+                                            labelText: 'Data di Scadenza',
+                                            fillColor: Theme.of(context)
+                                                .colorScheme
+                                                .surfaceVariant,
+                                            filled: true,
+                                            border: InputBorder.none,
+                                            errorBorder: UnderlineInputBorder(
+                                              borderSide: BorderSide(
+                                                  color: Theme.of(context)
+                                                      .colorScheme
+                                                      .error),
+                                            ),
+                                            labelStyle: TextStyle(
                                               color: Theme.of(context)
                                                   .colorScheme
                                                   .secondary,
                                             ),
-                                      ),
-                                    ],
+                                          ),
+                                          readOnly: true,
+                                          style: Theme.of(context)
+                                              .textTheme
+                                              .bodyMedium!
+                                              .copyWith(
+                                                color: Theme.of(context)
+                                                    .colorScheme
+                                                    .secondary,
+                                              ),
+                                          validator: (value) {
+                                            if (value == null ||
+                                                value.trim().isEmpty) {
+                                              return 'Campo obbligatorio!';
+                                            }
+                                            return null;
+                                          },
+                                        ),
+                                        const SizedBox(height: 11),
+                                        TextFormField(
+                                          initialValue: formState.numberCard,
+                                          decoration: InputDecoration(
+                                            labelText: 'Numero Tessera *',
+                                            fillColor: Theme.of(context)
+                                                .colorScheme
+                                                .surfaceVariant,
+                                            filled: true,
+                                            border: InputBorder.none,
+                                            focusedBorder: UnderlineInputBorder(
+                                              borderSide: BorderSide(
+                                                  color: Theme.of(context)
+                                                      .colorScheme
+                                                      .primary),
+                                            ),
+                                            errorBorder: UnderlineInputBorder(
+                                              borderSide: BorderSide(
+                                                  color: Theme.of(context)
+                                                      .colorScheme
+                                                      .error),
+                                            ),
+                                            focusedErrorBorder:
+                                                UnderlineInputBorder(
+                                              borderSide: BorderSide(
+                                                  color: Theme.of(context)
+                                                      .colorScheme
+                                                      .error),
+                                            ),
+                                            labelStyle: TextStyle(
+                                              color: Theme.of(context)
+                                                  .colorScheme
+                                                  .secondary,
+                                            ),
+                                          ),
+                                          readOnly:
+                                              isMemberUpdate ? true : false,
+                                          style: Theme.of(context)
+                                              .textTheme
+                                              .bodyMedium!
+                                              .copyWith(
+                                                color: Theme.of(context)
+                                                    .colorScheme
+                                                    .secondary,
+                                              ),
+                                          keyboardType: TextInputType.number,
+                                          inputFormatters: [
+                                            FilteringTextInputFormatter
+                                                .digitsOnly
+                                          ],
+                                          onChanged: (value) {
+                                            ref
+                                                .read(createMemberFormProvider
+                                                    .notifier)
+                                                .updateNumberCard(value);
+                                          },
+                                          validator: (value) {
+                                            if (value == null ||
+                                                value.trim().isEmpty) {
+                                              return 'Campo obbligatorio!';
+                                            }
+                                            if (value.length < 6) {
+                                              return 'Il numero della tessera deve essere di almeno 6 cifre';
+                                            }
+                                            if (value.length > 6) {
+                                              return 'Il numero della tessera deve essere di al massimo 6 cifre';
+                                            }
+                                            //deve essere solo numero
+                                            if (!RegExp(r'^[0-9]*$')
+                                                .hasMatch(value)) {
+                                              return 'Il numero della tessera deve essere solo numerico';
+                                            }
+                                            return null;
+                                          },
+                                        ),
+                                        const SizedBox(height: 22),
+                                        Row(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.start,
+                                          children: [
+                                            Switch(
+                                              value: formState.haveCardARCI,
+                                              onChanged: (bool haveCardARCI) {
+                                                ref
+                                                    .read(
+                                                        createMemberFormProvider
+                                                            .notifier)
+                                                    .updateHaveCardARCI(
+                                                        haveCardARCI);
+                                              },
+                                            ),
+                                            SizedBox(width: 10),
+                                            Text(
+                                              'Tessera ARCI',
+                                              style: Theme.of(context)
+                                                  .textTheme
+                                                  .bodyMedium!
+                                                  .copyWith(
+                                                    color: Theme.of(context)
+                                                        .colorScheme
+                                                        .secondary,
+                                                  ),
+                                            ),
+                                          ],
+                                        ),
+                                        const SizedBox(height: 12),
+                                        Row(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.start,
+                                          children: [
+                                            Switch(
+                                              value: formState.workingPartner,
+                                              onChanged: (bool workingPartner) {
+                                                ref
+                                                    .read(
+                                                        createMemberFormProvider
+                                                            .notifier)
+                                                    .updateWorkingMember(
+                                                        workingPartner);
+                                              },
+                                            ),
+                                            SizedBox(width: 10),
+                                            Text(
+                                              'Socia* Lavoratrice',
+                                              style: Theme.of(context)
+                                                  .textTheme
+                                                  .bodyMedium!
+                                                  .copyWith(
+                                                    color: Theme.of(context)
+                                                        .colorScheme
+                                                        .secondary,
+                                                  ),
+                                            ),
+                                          ],
+                                        ),
+                                        const SizedBox(height: 12),
+                                        Row(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.start,
+                                          children: [
+                                            Switch(
+                                              value: formState.volunteerMember,
+                                              onChanged:
+                                                  (bool volunteerMember) {
+                                                ref
+                                                    .read(
+                                                        createMemberFormProvider
+                                                            .notifier)
+                                                    .updateVolunteerMember(
+                                                        volunteerMember);
+                                              },
+                                            ),
+                                            SizedBox(width: 10),
+                                            Text(
+                                              'Socia* Volontaria',
+                                              style: Theme.of(context)
+                                                  .textTheme
+                                                  .bodyMedium!
+                                                  .copyWith(
+                                                    color: Theme.of(context)
+                                                        .colorScheme
+                                                        .secondary,
+                                                  ),
+                                            ),
+                                          ],
+                                        ),
+                                        const SizedBox(
+                                          height: 25,
+                                        ),
+                                      ],
+                                    ),
                                   ),
-                                  const SizedBox(
-                                    height: 25,
-                                  ),
-                                ],
-                              ),
-                            ),
                           ],
                         ),
                       ),

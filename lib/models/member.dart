@@ -1,13 +1,13 @@
-import 'dart:io';
-
-import 'package:alfi_gest/helpers/result.dart';
+import 'package:alfi_gest/core/result.dart';
+import 'package:alfi_gest/helpers/date_time.dart';
 import 'package:alfi_gest/helpers/validate_data.dart';
 import 'package:alfi_gest/models/enums.dart';
+import 'package:alfi_gest/models/identifiable.dart';
 import 'package:uuid/uuid.dart';
 
 var uuid = const Uuid();
 
-class Member {
+class Member implements Identifiable {
   Member({
     required this.memberId,
     required this.legalName,
@@ -35,9 +35,10 @@ class Member {
     required this.updateUser,
     required this.dateLastRenewal,
     required this.expirationDate,
-    required this.profileImageFile,
+    required this.profileImageString,
     required this.replaceCardMotivation,
     required this.isSuspended,
+    required this.isRejected,
   });
 
   String memberId;
@@ -66,9 +67,21 @@ class Member {
   String updateUser;
   final DateTime dateLastRenewal;
   final DateTime expirationDate;
-  final File? profileImageFile;
+  String? profileImageString;
   final ReplaceCardMotivation replaceCardMotivation;
   final bool isSuspended;
+  final bool isRejected;
+  @override
+  dynamic get id => memberId;
+  bool get isSuspend => isSuspended;
+  bool get isRemoved =>
+      DateHelper.calculateExpirationDate().isAfter(expirationDate);
+  String get title =>
+      givenName.isEmpty ? "$lastName $legalName" : "$lastName $givenName";
+  String get subTitle => numberCard.isEmpty ? "---" : numberCard;
+  String get foreignKey => idClub;
+  String get initials =>
+      '${givenName.isEmpty ? legalName[0] : givenName[0]}${lastName[0]}';
 
   Map<String, dynamic> toMap() {
     return {
@@ -98,9 +111,10 @@ class Member {
       'updateUser': updateUser,
       'dateLastRenewal': dateLastRenewal.toIso8601String(),
       'expirationDate': expirationDate.toIso8601String(),
-      'profileImage': profileImageFile?.path ?? "",
+      'profileImage': profileImageString ?? "",
       'replaceCardMotivation': replaceCardMotivation.index,
       'isSuspended': isSuspended,
+      'isRejected': isRejected,
     };
   }
 
@@ -132,15 +146,47 @@ class Member {
       updateUser: map['updateUser'] as String,
       dateLastRenewal: DateTime.parse(map['dateLastRenewal'] as String),
       expirationDate: DateTime.parse(map['expirationDate'] as String),
-      profileImageFile: (map['profileImage'] != null)
-          ? File(map['profileImage'] as String)
-          : null,
+      profileImageString: (map['profileImage'] as String),
       replaceCardMotivation: ReplaceCardMotivation.values
           .elementAt(map['replaceCardMotivation'] as int),
       isSuspended: map['isSuspended'] as bool,
+      isRejected: map['isRejected'] as bool,
     );
   }
-
+  factory Member.empty() {
+    return Member(
+      memberId: uuid.v6(),
+      legalName: '',
+      givenName: '',
+      lastName: '',
+      pronoun: Pronoun.values.first,
+      address: '',
+      birthDate: DateTime.now(),
+      taxIdCode: '',
+      documentType: TypeDocument.values.first,
+      documentNumber: '',
+      telephone: '',
+      email: '',
+      consentWhatsApp: false,
+      consentNewsletter: false,
+      workingPartner: false,
+      volunteerMember: false,
+      numberCard: '',
+      idClub: '',
+      haveCardARCI: false,
+      memberSince: DateTime.now(),
+      creationDate: DateTime.now(),
+      userCreation: '',
+      updateDate: DateTime.now(),
+      updateUser: '',
+      dateLastRenewal: DateTime.now(),
+      expirationDate: DateTime.now(),
+      profileImageString: null,
+      replaceCardMotivation: ReplaceCardMotivation.values.first,
+      isSuspended: false,
+      isRejected: false,
+    );
+  }
   Result<Member> validate(Member member) {
     List<String> errs = [];
 

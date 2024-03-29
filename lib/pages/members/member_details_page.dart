@@ -1,4 +1,5 @@
 import 'package:alfi_gest/helpers/date_time.dart';
+import 'package:alfi_gest/helpers/string_helper.dart';
 import 'package:alfi_gest/pages/members/member_replace_card.dart';
 import 'package:alfi_gest/pages/members/members_page.dart';
 import 'package:alfi_gest/providers/member/create_member_provider.dart';
@@ -28,12 +29,14 @@ class MemberDetailsPageState extends ConsumerState<MemberDetailsPage> {
         : Scaffold(
             appBar: AppBar(
               backgroundColor: Theme.of(context).colorScheme.surfaceVariant,
+              toolbarHeight: 70,
               leading: IconButton(
-                icon: Icon(Icons.chevron_left),
-                color: Theme.of(context).colorScheme.secondary,
-                onPressed: () =>
-                    ref.read(isMemberPageProvider.notifier).state = true,
-              ),
+                  icon: Icon(Icons.chevron_left),
+                  color: Theme.of(context).colorScheme.secondary,
+                  onPressed: () {
+                    ref.read(isMemberPageProvider.notifier).state = true;
+                    ref.read(isMainAppBarProvider.notifier).state = true;
+                  }),
               actions: [
                 TextButton(
                   onPressed: () {
@@ -41,6 +44,7 @@ class MemberDetailsPageState extends ConsumerState<MemberDetailsPage> {
                         false;
                     ref.read(isMemberDetailsUpdatePageProvider.notifier).state =
                         true;
+                    ref.read(isMemberReadyFor.notifier).state = true;
 
                     formState.memberId = member.memberId;
                     formState.address = member.address;
@@ -61,7 +65,7 @@ class MemberDetailsPageState extends ConsumerState<MemberDetailsPage> {
                     formState.lastName = member.lastName;
                     formState.legalName = member.legalName;
                     formState.numberCard = member.numberCard;
-                    formState.profileImageFile = member.profileImageFile;
+                    formState.profileImageString = member.profileImageString;
                     formState.taxIdCode = member.taxIdCode;
                     formState.telephone = member.telephone;
                     formState.updateDate = member.updateDate;
@@ -454,7 +458,8 @@ class MemberDetailsPageState extends ConsumerState<MemberDetailsPage> {
                                   children: [
                                     Text(
                                       member.documentType.name.isNotEmpty
-                                          ? member.documentType.name
+                                          ? displayStringForTypeDocument(
+                                              member.documentType)
                                           : "Nessun documento",
                                       style: TextStyle(
                                         color: Theme.of(context)
@@ -515,20 +520,45 @@ class MemberDetailsPageState extends ConsumerState<MemberDetailsPage> {
                                 true;
                             ScaffoldMessenger.of(context).showSnackBar(
                               SnackBar(
+                                  backgroundColor:
+                                      Theme.of(context).colorScheme.primary,
                                   shape: RoundedRectangleBorder(
                                     borderRadius: BorderRadius.circular(4),
                                   ),
-                                  content: Text(isExpiredCard ||
-                                          member.isSuspended == true
-                                      ? "Tessera rinnovata con successo!"
-                                      : "Socia* sospesa con successo!"),
+                                  content: Text(
+                                    isExpiredCard || member.isSuspended == true
+                                        ? "Tessera rinnovata con successo!"
+                                        : "Socia* sospesa con successo!",
+                                    style: Theme.of(context)
+                                        .textTheme
+                                        .bodyMedium!
+                                        .copyWith(
+                                            color: Theme.of(context)
+                                                .colorScheme
+                                                .onPrimary),
+                                  ),
                                   behavior: SnackBarBehavior.floating),
                             );
                           } else {
                             ScaffoldMessenger.of(context).showSnackBar(
                               SnackBar(
-                                content: Text(result.error!),
-                              ),
+                                  backgroundColor: Theme.of(context)
+                                      .colorScheme
+                                      .errorContainer,
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(4),
+                                  ),
+                                  content: Text(
+                                    result.error!,
+                                    style: Theme.of(context)
+                                        .textTheme
+                                        .bodyMedium!
+                                        .copyWith(
+                                            color: Theme.of(context)
+                                                .colorScheme
+                                                .onTertiary),
+                                  ),
+                                  behavior: SnackBarBehavior.floating),
                             );
                           }
                         },

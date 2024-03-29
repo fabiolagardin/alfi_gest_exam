@@ -1,4 +1,4 @@
-import 'package:alfi_gest/helpers/result.dart';
+import 'package:alfi_gest/core/result.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -48,6 +48,12 @@ class AuthController {
 class AuthControllerState extends StateNotifier<AuthController> {
   AuthControllerState() : super(AuthController());
   final FirebaseAuth _firebaseAuth = FirebaseAuth.instance;
+  bool get rememberMe => state.rememberMe;
+  String get email => state.email;
+  String get password => state.password;
+  bool get isLogin => state.isLogin;
+  bool get showPassword => state.showPassword;
+  AuthState get authState => state.authState;
 
   void updateEmail(String value) => state = state.copyWith(email: value);
   void updatePassword(String value) => state = state.copyWith(password: value);
@@ -123,7 +129,7 @@ class AuthControllerState extends StateNotifier<AuthController> {
         case 'invalid-email':
           errorMessage = "L'indirizzo email non è valido.";
           break;
-        case 'INVALID_LOGIN_CREDENTIALS':
+        case 'invalid-credential':
           errorMessage =
               "Le credenziali di accesso fornite non sono valide. Controlla la tua email e password e riprova.";
           break;

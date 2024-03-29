@@ -41,7 +41,7 @@ class AuthScreen extends ConsumerWidget {
                     child: SingleChildScrollView(
                       child: Padding(
                         padding: EdgeInsets.symmetric(
-                            vertical: isRegisterMember ? 15 : 110,
+                            vertical: isRegisterMember ? 55 : 110,
                             horizontal: isRegisterMember ? 34 : 55),
                         child: Column(
                           mainAxisAlignment: MainAxisAlignment.center,

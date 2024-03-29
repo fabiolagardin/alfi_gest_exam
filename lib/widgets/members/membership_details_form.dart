@@ -1,52 +1,31 @@
-import 'package:alfi_gest/providers/clubs/clubs_provder.dart';
+import 'package:alfi_gest/providers/clubs/clubs_provider.dart';
 import 'package:alfi_gest/providers/member/create_member_provider.dart';
+import 'package:alfi_gest/widgets/clubs/clubs_select.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class MembershipDetailsForm extends ConsumerWidget {
   final GlobalKey<FormState> formKey;
-  const MembershipDetailsForm({Key? key, required this.formKey})
-      : super(key: key);
+  MembershipDetailsForm({Key? key, required this.formKey}) : super(key: key);
 
+  final TextEditingController clubController = TextEditingController();
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final formState = ref.watch(createMemberFormProvider);
-    final clubsAsyncValue = ref.watch(clubsProvider);
-
+    final clubs = ref.watch(filteredClubsProvider);
+    final matchingClubs =
+        clubs.where((element) => element.idClub == formState.idClub).toList();
+    clubController.text =
+        (matchingClubs.isNotEmpty) ? matchingClubs.first.nameClub : '';
     return Form(
       key: formKey,
       child: Column(
         children: [
-          clubsAsyncValue.when(
-            data: (clubs) => DropdownButtonFormField<String>(
-              value: formState.idClub != null &&
-                      clubs.any((club) => club.idClub == formState.idClub)
-                  ? formState.idClub
-                  : null, // Assicurati che il valore corrente esista nell'elenco, altrimenti imposta su null
-              onChanged: (String? newValue) {
-                ref
-                    .read(createMemberFormProvider.notifier)
-                    .updateIdClub(newValue ?? '');
-              },
-              items: clubs.map<DropdownMenuItem<String>>((club) {
-                return DropdownMenuItem<String>(
-                  value: club.idClub,
-                  child: Text(club.nameClub),
-                );
-              }).toList(),
-              decoration: InputDecoration(
-                labelText: 'Circolo',
-                fillColor: Theme.of(context).colorScheme.surfaceVariant,
-                filled: true,
-                border: InputBorder.none,
-              ),
-            ),
-            loading: () => const CircularProgressIndicator(),
-            error: (e, _) => Text('Error: $e'),
-          ),
+          ClubsSelectWidget(
+              clubController: clubController, clubs: clubs, isTextField: true),
           const SizedBox(height: 22),
           Padding(
-            padding: const EdgeInsets.only(right: 60),
+            padding: const EdgeInsets.only(right: 30),
             child: Text(
               'Oltre alla tessera ALFI, vuoi aggiungere la tessera ARCI?',
               style: Theme.of(context).textTheme.bodyLarge!.copyWith(
@@ -55,6 +34,7 @@ class MembershipDetailsForm extends ConsumerWidget {
                   ),
             ),
           ),
+          SizedBox(height: 10),
           Row(
             mainAxisAlignment: MainAxisAlignment.start,
             children: [
@@ -66,6 +46,7 @@ class MembershipDetailsForm extends ConsumerWidget {
                       .updateHaveCardARCI(haveCardARCI);
                 },
               ),
+              SizedBox(width: 10),
               Text(
                 'Tessera ARCI',
                 style: Theme.of(context).textTheme.bodyMedium!.copyWith(

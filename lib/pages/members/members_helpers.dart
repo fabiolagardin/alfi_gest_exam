@@ -20,24 +20,36 @@ class MembersPageHelpers {
           padding: const EdgeInsets.only(top: 10),
           child: SafeArea(
             child: SingleChildScrollView(
-              padding: const EdgeInsets.symmetric(vertical: 28),
+              padding: const EdgeInsets.only(bottom: 28),
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 mainAxisAlignment: MainAxisAlignment.start,
                 children: <Widget>[
                   Padding(
-                    padding: const EdgeInsets.all(20),
-                    child: Row(
+                    padding: const EdgeInsets.fromLTRB(38, 0, 38, 20),
+                    child: Column(
                       children: [
-                        Text('Ordina',
-                            style: Theme.of(context)
-                                .textTheme
-                                .titleMedium!
-                                .copyWith(
-                                  color:
-                                      Theme.of(context).colorScheme.secondary,
-                                )),
-                        const Spacer(),
+                        Icon(
+                          Icons.horizontal_rule,
+                          size: 40,
+                        ),
+                        SizedBox(height: 10),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Text(
+                              'Ordina',
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .titleMedium!
+                                  .copyWith(
+                                    color:
+                                        Theme.of(context).colorScheme.secondary,
+                                  ),
+                            ),
+                            const Spacer(),
+                          ],
+                        ),
                       ],
                     ),
                   ),
@@ -116,11 +128,15 @@ class MembersPageHelpers {
                           ],
                         ),
                         onTap: () {
-                          ref.read(orderTypeProvider.notifier).state =
-                              OrderType.ascending;
+                          var oredrType =
+                              ref.read(orderTypeProvider.notifier).state;
+                          var result = oredrType != OrderType.ascending
+                              ? OrderType.ascending
+                              : OrderType.notSelected;
+                          ref.read(orderTypeProvider.notifier).state = result;
                           ref
                               .read(filteredMembersProvider.notifier)
-                              .orderByLastName(orderType: OrderType.ascending);
+                              .orderByLastName(orderType: result);
                           Navigator.pop(context); // Chiude la bottom modal
                         },
                       ),
@@ -151,11 +167,15 @@ class MembersPageHelpers {
                           ],
                         ),
                         onTap: () {
-                          ref.read(orderTypeProvider.notifier).state =
-                              OrderType.descending;
+                          var oredrType =
+                              ref.read(orderTypeProvider.notifier).state;
+                          var result = oredrType != OrderType.descending
+                              ? OrderType.descending
+                              : OrderType.notSelected;
+                          ref.read(orderTypeProvider.notifier).state = result;
                           ref
                               .read(filteredMembersProvider.notifier)
-                              .orderByLastName(orderType: OrderType.descending);
+                              .orderByLastName(orderType: result);
                           Navigator.pop(context); // Chiude la bottom modal
                         },
                       ),
@@ -192,24 +212,36 @@ class MembersPageHelpers {
           padding: const EdgeInsets.only(top: 10),
           child: SafeArea(
             child: SingleChildScrollView(
-              padding: const EdgeInsets.symmetric(vertical: 28),
+              padding: const EdgeInsets.only(bottom: 28),
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 mainAxisAlignment: MainAxisAlignment.start,
                 children: <Widget>[
                   Padding(
-                    padding: const EdgeInsets.all(20),
-                    child: Row(
+                    padding: const EdgeInsets.fromLTRB(35, 0, 35, 20),
+                    child: Column(
                       children: [
-                        Text('Filtri',
-                            style: Theme.of(context)
-                                .textTheme
-                                .titleMedium!
-                                .copyWith(
-                                  color:
-                                      Theme.of(context).colorScheme.secondary,
-                                )),
-                        const Spacer(),
+                        Icon(
+                          Icons.horizontal_rule,
+                          size: 40,
+                        ),
+                        SizedBox(height: 10),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Text(
+                              'Filtri',
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .titleMedium!
+                                  .copyWith(
+                                    color:
+                                        Theme.of(context).colorScheme.secondary,
+                                  ),
+                            ),
+                            const Spacer(),
+                          ],
+                        ),
                       ],
                     ),
                   ),
@@ -248,7 +280,10 @@ class MembersPageHelpers {
                           ref.read(clubIdSelectedProvider.notifier).state = "";
                           ref
                               .read(filteredMembersProvider.notifier)
-                              .resetFilters();
+                              .filterMembers(
+                                  clubId: clubIdSelected.state,
+                                  cardState: CardState.notSelected);
+
                           Navigator.pop(context); // Chiude la bottom modal
                         },
                       ),
@@ -269,10 +304,28 @@ class MembersPageHelpers {
                         title: Row(
                           children: [
                             Text(
-                              'Scadenza',
+                              'Tessera',
                               style: Theme.of(context).textTheme.bodyLarge,
                             ),
                             const Spacer(),
+                            Text(
+                              cardStateSelected.state == CardState.expiried
+                                  ? 'Scaduta'
+                                  : cardStateSelected.state == CardState.suspend
+                                      ? 'Sospesa'
+                                      : cardStateSelected.state ==
+                                              CardState.active
+                                          ? 'Attiva'
+                                          : '',
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .bodyMedium!
+                                  .copyWith(
+                                      color: Theme.of(context)
+                                          .colorScheme
+                                          .tertiary),
+                            ),
+                            SizedBox(width: 15),
                             Icon(
                               Icons.chevron_right,
                               color:
@@ -296,53 +349,68 @@ class MembersPageHelpers {
                             ),
                             builder: (BuildContext context) {
                               return Padding(
-                                padding: const EdgeInsets.only(top: 10),
+                                padding: const EdgeInsets.only(bottom: 10),
                                 child: SafeArea(
                                   child: SingleChildScrollView(
-                                    padding: const EdgeInsets.symmetric(
-                                        vertical: 28),
+                                    padding: const EdgeInsets.only(bottom: 28),
                                     child: Column(
                                       mainAxisSize: MainAxisSize.min,
                                       mainAxisAlignment:
                                           MainAxisAlignment.start,
                                       children: <Widget>[
                                         Padding(
-                                          padding: const EdgeInsets.symmetric(
-                                              vertical: 10, horizontal: 0),
-                                          child: Row(
+                                          padding: const EdgeInsets.fromLTRB(
+                                              15, 0, 15, 20),
+                                          child: Column(
                                             children: [
-                                              TextButton(
-                                                child: Row(
-                                                  children: [
-                                                    Icon(Icons
-                                                        .chevron_left), // Add the icon as a prefix
-                                                    Text(
-                                                      'Scadenza',
-                                                      style: Theme.of(context)
-                                                          .textTheme
-                                                          .titleMedium!
-                                                          .copyWith(
-                                                            color: Theme.of(
-                                                                    context)
-                                                                .colorScheme
-                                                                .secondary,
-                                                          ),
-                                                    ),
-                                                  ],
-                                                ),
-                                                onPressed: () {
-                                                  Navigator.pop(context);
-                                                  showFilterOptions(
-                                                      context,
-                                                      ref,
-                                                      filteredSelected,
-                                                      orderSelected,
-                                                      cardStateSelected,
-                                                      clubIdSelected,
-                                                      clubs);
-                                                },
+                                              Icon(
+                                                Icons.horizontal_rule,
+                                                size: 40,
                                               ),
-                                              const Spacer(),
+                                              SizedBox(height: 10),
+                                              Row(
+                                                children: [
+                                                  TextButton(
+                                                    child: Row(
+                                                      children: [
+                                                        Icon(
+                                                          Icons.chevron_left,
+                                                          color: Theme.of(
+                                                                  context)
+                                                              .colorScheme
+                                                              .outlineVariant,
+                                                        ), // Add the icon as a prefix
+                                                        SizedBox(width: 7),
+                                                        Text(
+                                                          'Tessera',
+                                                          style:
+                                                              Theme.of(context)
+                                                                  .textTheme
+                                                                  .titleMedium!
+                                                                  .copyWith(
+                                                                    color: Theme.of(
+                                                                            context)
+                                                                        .colorScheme
+                                                                        .secondary,
+                                                                  ),
+                                                        ),
+                                                      ],
+                                                    ),
+                                                    onPressed: () {
+                                                      Navigator.pop(context);
+                                                      showFilterOptions(
+                                                          context,
+                                                          ref,
+                                                          filteredSelected,
+                                                          orderSelected,
+                                                          cardStateSelected,
+                                                          clubIdSelected,
+                                                          clubs);
+                                                    },
+                                                  ),
+                                                  const Spacer(),
+                                                ],
+                                              ),
                                             ],
                                           ),
                                         ),
@@ -389,10 +457,32 @@ class MembersPageHelpers {
                                                 ],
                                               ),
                                               onTap: () {
+                                                var clubId =
+                                                    clubIdSelected.state;
+                                                var cardState = ref.read(
+                                                    cardStateProvider.notifier);
+
+                                                var result = cardState.state !=
+                                                        CardState.expiried
+                                                    ? CardState.expiried
+                                                    : CardState.notSelected;
+                                                var isNotSelected = result ==
+                                                            CardState
+                                                                .notSelected &&
+                                                        clubId == ""
+                                                    ? FilterdSelected
+                                                        .notSelected
+                                                    : FilterdSelected
+                                                        .expiration;
+                                                ref
+                                                    .read(
+                                                        filteredSelectedProvider
+                                                            .notifier)
+                                                    .state = isNotSelected;
                                                 ref
                                                     .read(cardStateProvider
                                                         .notifier)
-                                                    .state = CardState.expiried;
+                                                    .state = result;
                                                 ref
                                                     .read(
                                                         filteredMembersProvider
@@ -400,14 +490,13 @@ class MembersPageHelpers {
                                                     .filterMembers(
                                                         clubId: clubIdSelected
                                                             .state,
-                                                        cardState:
-                                                            cardStateSelected
-                                                                .state);
+                                                        cardState: result);
                                                 Navigator.pop(context);
                                               },
                                             ),
                                           ),
                                         ),
+                                        // filtro per socie sospese
                                         Padding(
                                           padding: const EdgeInsets.symmetric(
                                               horizontal: 16),
@@ -446,10 +535,31 @@ class MembersPageHelpers {
                                                 ],
                                               ),
                                               onTap: () {
+                                                var clubId =
+                                                    clubIdSelected.state;
+                                                var cardState = ref.read(
+                                                    cardStateProvider.notifier);
+                                                var result = cardState.state !=
+                                                        CardState.suspend
+                                                    ? CardState.suspend
+                                                    : CardState.notSelected;
+                                                var isNotSelected = result ==
+                                                            CardState
+                                                                .notSelected &&
+                                                        clubId == ""
+                                                    ? FilterdSelected
+                                                        .notSelected
+                                                    : FilterdSelected
+                                                        .expiration;
+                                                ref
+                                                    .read(
+                                                        filteredSelectedProvider
+                                                            .notifier)
+                                                    .state = isNotSelected;
                                                 ref
                                                     .read(cardStateProvider
                                                         .notifier)
-                                                    .state = CardState.suspend;
+                                                    .state = result;
                                                 ref
                                                     .read(
                                                         filteredMembersProvider
@@ -457,9 +567,7 @@ class MembersPageHelpers {
                                                     .filterMembers(
                                                         clubId: clubIdSelected
                                                             .state,
-                                                        cardState:
-                                                            cardStateSelected
-                                                                .state);
+                                                        cardState: result);
                                                 Navigator.pop(context);
                                               },
                                             ),
@@ -497,10 +605,31 @@ class MembersPageHelpers {
                                                 ],
                                               ),
                                               onTap: () {
+                                                var clubId =
+                                                    clubIdSelected.state;
+                                                var cardState = ref.read(
+                                                    cardStateProvider.notifier);
+                                                var result = cardState.state !=
+                                                        CardState.active
+                                                    ? CardState.active
+                                                    : CardState.notSelected;
+                                                var isNotSelected = result ==
+                                                            CardState
+                                                                .notSelected &&
+                                                        clubId == ""
+                                                    ? FilterdSelected
+                                                        .notSelected
+                                                    : FilterdSelected
+                                                        .expiration;
+                                                ref
+                                                    .read(
+                                                        filteredSelectedProvider
+                                                            .notifier)
+                                                    .state = isNotSelected;
                                                 ref
                                                     .read(cardStateProvider
                                                         .notifier)
-                                                    .state = CardState.active;
+                                                    .state = result;
                                                 ref
                                                     .read(
                                                         filteredMembersProvider
@@ -508,9 +637,7 @@ class MembersPageHelpers {
                                                     .filterMembers(
                                                         clubId: clubIdSelected
                                                             .state,
-                                                        cardState:
-                                                            cardStateSelected
-                                                                .state);
+                                                        cardState: result);
                                                 Navigator.pop(context);
                                               },
                                             ),
@@ -527,161 +654,141 @@ class MembersPageHelpers {
                       ),
                     ),
                   ),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                    child: ListTile(
-                      selected: filteredSelected.state == FilterdSelected.club
-                          ? true
-                          : false,
-                      selectedColor: Theme.of(context).colorScheme.primary,
-                      title: Row(
-                        children: [
-                          Text(
-                            'Circolo',
-                            style: Theme.of(context).textTheme.bodyLarge,
-                          ),
-                          const Spacer(),
-                          Icon(
-                            Icons.chevron_right,
-                            color: Theme.of(context).colorScheme.outlineVariant,
-                            size: 24,
-                          ),
-                        ],
-                      ),
-                      onTap: () {
-                        ref.read(filteredSelectedProvider.notifier).state =
-                            FilterdSelected.club;
-                        Navigator.pop(context);
-
-                        showModalBottomSheet(
-                          context: context,
-                          shape: const RoundedRectangleBorder(
-                            borderRadius: BorderRadius.only(
-                              topLeft: Radius.circular(20),
-                              topRight: Radius.circular(20),
+                  clubs.isNotEmpty
+                      ? Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                          child: ListTile(
+                            selected:
+                                filteredSelected.state == FilterdSelected.club
+                                    ? true
+                                    : false,
+                            selectedColor:
+                                Theme.of(context).colorScheme.primary,
+                            title: Row(
+                              children: [
+                                Text(
+                                  'Circolo',
+                                  style: Theme.of(context).textTheme.bodyLarge,
+                                ),
+                                const Spacer(),
+                                Text(
+                                  filteredSelected.state == FilterdSelected.club
+                                      ? clubs
+                                          .firstWhere(
+                                            (c) =>
+                                                c.idClub ==
+                                                clubIdSelected.state,
+                                            orElse: () => Club.empty(),
+                                          )
+                                          .nameClub
+                                      : '',
+                                  style: Theme.of(context)
+                                      .textTheme
+                                      .bodyMedium!
+                                      .copyWith(
+                                          color: Theme.of(context)
+                                              .colorScheme
+                                              .tertiary),
+                                ),
+                                SizedBox(width: 15),
+                                Icon(
+                                  Icons.chevron_right,
+                                  color: Theme.of(context)
+                                      .colorScheme
+                                      .outlineVariant,
+                                  size: 24,
+                                ),
+                              ],
                             ),
-                          ),
-                          builder: (BuildContext context) {
-                            return Padding(
-                              padding: const EdgeInsets.only(top: 10),
-                              child: SafeArea(
-                                child: SingleChildScrollView(
-                                  padding:
-                                      const EdgeInsets.symmetric(vertical: 28),
-                                  child: Column(
-                                    mainAxisSize: MainAxisSize.min,
-                                    mainAxisAlignment: MainAxisAlignment.start,
-                                    children: <Widget>[
-                                      Padding(
-                                        padding: const EdgeInsets.symmetric(
-                                            vertical: 10, horizontal: 0),
-                                        child: Row(
-                                          children: [
-                                            TextButton(
-                                              child: Row(
+                            onTap: () {
+                              ref
+                                  .read(filteredSelectedProvider.notifier)
+                                  .state = FilterdSelected.club;
+                              Navigator.pop(context);
+
+                              showModalBottomSheet(
+                                context: context,
+                                shape: const RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.only(
+                                    topLeft: Radius.circular(20),
+                                    topRight: Radius.circular(20),
+                                  ),
+                                ),
+                                builder: (BuildContext context) {
+                                  return Padding(
+                                    padding: const EdgeInsets.only(bottom: 10),
+                                    child: SafeArea(
+                                      child: SingleChildScrollView(
+                                        padding:
+                                            const EdgeInsets.only(bottom: 28),
+                                        child: Column(
+                                          mainAxisSize: MainAxisSize.min,
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.start,
+                                          children: <Widget>[
+                                            Padding(
+                                              padding:
+                                                  const EdgeInsets.fromLTRB(
+                                                      15, 0, 15, 20),
+                                              child: Column(
                                                 children: [
-                                                  Icon(Icons.chevron_left),
-                                                  Text(
-                                                    'Circolo',
-                                                    style: Theme.of(context)
-                                                        .textTheme
-                                                        .titleMedium!
-                                                        .copyWith(
-                                                          color:
-                                                              Theme.of(context)
+                                                  Icon(
+                                                    Icons.horizontal_rule,
+                                                    size: 40,
+                                                  ),
+                                                  SizedBox(height: 10),
+                                                  Row(
+                                                    children: [
+                                                      TextButton(
+                                                        child: Row(
+                                                          children: [
+                                                            Icon(
+                                                              Icons
+                                                                  .chevron_left,
+                                                              color: Theme.of(
+                                                                      context)
                                                                   .colorScheme
-                                                                  .secondary,
+                                                                  .outlineVariant,
+                                                            ), // Add the icon as a prefix
+                                                            SizedBox(width: 7),
+                                                            Text(
+                                                              'Circolo',
+                                                              style: Theme.of(
+                                                                      context)
+                                                                  .textTheme
+                                                                  .titleMedium!
+                                                                  .copyWith(
+                                                                    color: Theme.of(
+                                                                            context)
+                                                                        .colorScheme
+                                                                        .secondary,
+                                                                  ),
+                                                            ),
+                                                          ],
                                                         ),
+                                                        onPressed: () {
+                                                          Navigator.pop(
+                                                              context);
+                                                          showFilterOptions(
+                                                              context,
+                                                              ref,
+                                                              filteredSelected,
+                                                              orderSelected,
+                                                              cardStateSelected,
+                                                              clubIdSelected,
+                                                              clubs);
+                                                        },
+                                                      ),
+                                                      const Spacer(),
+                                                    ],
                                                   ),
                                                 ],
                                               ),
-                                              onPressed: () {
-                                                Navigator.pop(context);
-                                                showFilterOptions(
-                                                    context,
-                                                    ref,
-                                                    filteredSelected,
-                                                    orderSelected,
-                                                    cardStateSelected,
-                                                    clubIdSelected,
-                                                    clubs);
-                                              },
                                             ),
-                                            const Spacer(),
-                                          ],
-                                        ),
-                                      ),
-                                      Padding(
-                                        padding: const EdgeInsets.symmetric(
-                                            horizontal: 16.0),
-                                        child: Container(
-                                          decoration: BoxDecoration(
-                                            border: Border(
-                                              bottom: BorderSide(
-                                                width: 1.0,
-                                                color: Theme.of(context)
-                                                    .colorScheme
-                                                    .outlineVariant,
-                                              ),
-                                            ),
-                                          ),
-                                          child: ListTile(
-                                            selected: orderSelected.state ==
-                                                    OrderType.notSelected
-                                                ? true
-                                                : false,
-                                            contentPadding:
-                                                const EdgeInsets.symmetric(
-                                                    horizontal: 20,
-                                                    vertical: 0),
-                                            title: Row(
-                                              children: [
-                                                Text(
-                                                  clubs.first.nameClub,
-                                                  style: Theme.of(context)
-                                                      .textTheme
-                                                      .bodyLarge,
-                                                ),
-                                                const Spacer(),
-                                                if (clubIdSelected.state ==
-                                                    clubs.first.idClub)
-                                                  Icon(
-                                                    Icons.check,
-                                                    color: Theme.of(context)
-                                                        .colorScheme
-                                                        .primary,
-                                                  ),
-                                              ],
-                                            ),
-                                            onTap: () {
-                                              ref
-                                                  .read(clubIdSelectedProvider
-                                                      .notifier)
-                                                  .state = clubs.first.idClub;
-                                              ref
-                                                  .read(filteredMembersProvider
-                                                      .notifier)
-                                                  .filterMembers(
-                                                      clubId:
-                                                          clubs.first.idClub,
-                                                      cardState:
-                                                          cardStateSelected
-                                                              .state);
-
-                                              Navigator.pop(context);
-                                            },
-                                          ),
-                                        ),
-                                      ),
-                                      Column(
-                                        children: [
-                                          for (int i = 1;
-                                              i < clubs.length - 1;
-                                              i++) ...[
                                             Padding(
                                               padding:
                                                   const EdgeInsets.symmetric(
-                                                      horizontal: 16),
+                                                      horizontal: 16.0),
                                               child: Container(
                                                 decoration: BoxDecoration(
                                                   border: Border(
@@ -694,6 +801,11 @@ class MembersPageHelpers {
                                                   ),
                                                 ),
                                                 child: ListTile(
+                                                  selected: orderSelected
+                                                              .state ==
+                                                          OrderType.notSelected
+                                                      ? true
+                                                      : false,
                                                   contentPadding:
                                                       const EdgeInsets
                                                           .symmetric(
@@ -702,7 +814,7 @@ class MembersPageHelpers {
                                                   title: Row(
                                                     children: [
                                                       Text(
-                                                        clubs[i].nameClub,
+                                                        clubs.first.nameClub,
                                                         style: Theme.of(context)
                                                             .textTheme
                                                             .bodyLarge,
@@ -710,7 +822,7 @@ class MembersPageHelpers {
                                                       const Spacer(),
                                                       if (clubIdSelected
                                                               .state ==
-                                                          clubs[i].idClub)
+                                                          clubs.first.idClub)
                                                         Icon(
                                                           Icons.check,
                                                           color:
@@ -721,20 +833,230 @@ class MembersPageHelpers {
                                                     ],
                                                   ),
                                                   onTap: () {
+                                                    var cardState = ref
+                                                                .read(cardStateProvider
+                                                                    .notifier)
+                                                                .state ==
+                                                            CardState
+                                                                .notSelected
+                                                        ? CardState.notSelected
+                                                        : CardState.active;
+                                                    var result = clubIdSelected
+                                                                .state ==
+                                                            clubs.first.idClub
+                                                        ? ""
+                                                        : clubs.first.idClub;
+                                                    var isNotSelected = cardState ==
+                                                                CardState
+                                                                    .notSelected &&
+                                                            result == ""
+                                                        ? FilterdSelected
+                                                            .notSelected
+                                                        : FilterdSelected.club;
+                                                    ref
+                                                        .read(
+                                                            filteredSelectedProvider
+                                                                .notifier)
+                                                        .state = isNotSelected;
+
                                                     ref
                                                         .read(
                                                             clubIdSelectedProvider
                                                                 .notifier)
-                                                        .state = clubs[
-                                                            i]
-                                                        .idClub;
+                                                        .state = result;
                                                     ref
                                                         .read(
                                                             filteredMembersProvider
                                                                 .notifier)
                                                         .filterMembers(
-                                                            clubId:
-                                                                clubs[i].idClub,
+                                                            clubId: result,
+                                                            cardState:
+                                                                cardStateSelected
+                                                                    .state);
+
+                                                    Navigator.pop(context);
+                                                  },
+                                                ),
+                                              ),
+                                            ),
+                                            Column(
+                                              children: [
+                                                for (int i = 1;
+                                                    i < clubs.length - 1;
+                                                    i++) ...[
+                                                  Padding(
+                                                    padding: const EdgeInsets
+                                                        .symmetric(
+                                                        horizontal: 16),
+                                                    child: Container(
+                                                      decoration: BoxDecoration(
+                                                        border: Border(
+                                                          bottom: BorderSide(
+                                                            width: 1.0,
+                                                            color: Theme.of(
+                                                                    context)
+                                                                .colorScheme
+                                                                .outlineVariant,
+                                                          ),
+                                                        ),
+                                                      ),
+                                                      child: ListTile(
+                                                        contentPadding:
+                                                            const EdgeInsets
+                                                                .symmetric(
+                                                                horizontal: 20,
+                                                                vertical: 0),
+                                                        title: Row(
+                                                          children: [
+                                                            Text(
+                                                              clubs[i].nameClub,
+                                                              style: Theme.of(
+                                                                      context)
+                                                                  .textTheme
+                                                                  .bodyLarge,
+                                                            ),
+                                                            const Spacer(),
+                                                            if (clubIdSelected
+                                                                    .state ==
+                                                                clubs[i].idClub)
+                                                              Icon(
+                                                                Icons.check,
+                                                                color: Theme.of(
+                                                                        context)
+                                                                    .colorScheme
+                                                                    .primary,
+                                                              ),
+                                                          ],
+                                                        ),
+                                                        onTap: () {
+                                                          var cardState = ref
+                                                                      .read(cardStateProvider
+                                                                          .notifier)
+                                                                      .state ==
+                                                                  CardState
+                                                                      .notSelected
+                                                              ? CardState
+                                                                  .notSelected
+                                                              : CardState
+                                                                  .active;
+                                                          var result =
+                                                              clubIdSelected
+                                                                          .state ==
+                                                                      clubs[i]
+                                                                          .idClub
+                                                                  ? ""
+                                                                  : clubs[i]
+                                                                      .idClub;
+                                                          var isNotSelected = cardState ==
+                                                                      CardState
+                                                                          .notSelected &&
+                                                                  result == ""
+                                                              ? FilterdSelected
+                                                                  .notSelected
+                                                              : FilterdSelected
+                                                                  .club;
+                                                          ref
+                                                              .read(
+                                                                  filteredSelectedProvider
+                                                                      .notifier)
+                                                              .state = isNotSelected;
+                                                          ref
+                                                              .read(
+                                                                  clubIdSelectedProvider
+                                                                      .notifier)
+                                                              .state = result;
+                                                          ref
+                                                              .read(
+                                                                  filteredMembersProvider
+                                                                      .notifier)
+                                                              .filterMembers(
+                                                                  clubId:
+                                                                      result,
+                                                                  cardState:
+                                                                      cardStateSelected
+                                                                          .state);
+                                                          Navigator.pop(
+                                                              context);
+                                                        },
+                                                      ),
+                                                    ),
+                                                  ),
+                                                ],
+                                              ],
+                                            ),
+                                            Padding(
+                                              padding:
+                                                  const EdgeInsets.symmetric(
+                                                      horizontal: 16.0),
+                                              child: Container(
+                                                child: ListTile(
+                                                  contentPadding:
+                                                      const EdgeInsets
+                                                          .symmetric(
+                                                          horizontal: 20,
+                                                          vertical: 0),
+                                                  selectedColor:
+                                                      Theme.of(context)
+                                                          .colorScheme
+                                                          .primary,
+                                                  title: Row(
+                                                    children: [
+                                                      Text(
+                                                        clubs.last.nameClub,
+                                                        style: Theme.of(context)
+                                                            .textTheme
+                                                            .bodyLarge,
+                                                      ),
+                                                      const Spacer(),
+                                                      if (clubIdSelected
+                                                              .state ==
+                                                          clubs.last.idClub)
+                                                        Icon(
+                                                          Icons.check,
+                                                          color:
+                                                              Theme.of(context)
+                                                                  .colorScheme
+                                                                  .primary,
+                                                        ),
+                                                    ],
+                                                  ),
+                                                  onTap: () {
+                                                    var cardState = ref
+                                                                .read(cardStateProvider
+                                                                    .notifier)
+                                                                .state ==
+                                                            CardState
+                                                                .notSelected
+                                                        ? CardState.notSelected
+                                                        : CardState.active;
+                                                    var result = clubIdSelected
+                                                                .state ==
+                                                            clubs.last.idClub
+                                                        ? ""
+                                                        : clubs.last.idClub;
+                                                    var isNotSelected = cardState ==
+                                                                CardState
+                                                                    .notSelected &&
+                                                            result == ""
+                                                        ? FilterdSelected
+                                                            .notSelected
+                                                        : FilterdSelected.club;
+                                                    ref
+                                                        .read(
+                                                            filteredSelectedProvider
+                                                                .notifier)
+                                                        .state = isNotSelected;
+                                                    ref
+                                                        .read(
+                                                            clubIdSelectedProvider
+                                                                .notifier)
+                                                        .state = result;
+                                                    ref
+                                                        .read(
+                                                            filteredMembersProvider
+                                                                .notifier)
+                                                        .filterMembers(
+                                                            clubId: result,
                                                             cardState:
                                                                 cardStateSelected
                                                                     .state);
@@ -744,67 +1066,16 @@ class MembersPageHelpers {
                                               ),
                                             ),
                                           ],
-                                        ],
-                                      ),
-                                      Padding(
-                                        padding: const EdgeInsets.symmetric(
-                                            horizontal: 16.0),
-                                        child: Container(
-                                          child: ListTile(
-                                            contentPadding:
-                                                const EdgeInsets.symmetric(
-                                                    horizontal: 20,
-                                                    vertical: 0),
-                                            selectedColor: Theme.of(context)
-                                                .colorScheme
-                                                .primary,
-                                            title: Row(
-                                              children: [
-                                                Text(
-                                                  clubs.last.nameClub,
-                                                  style: Theme.of(context)
-                                                      .textTheme
-                                                      .bodyLarge,
-                                                ),
-                                                const Spacer(),
-                                                if (clubIdSelected.state ==
-                                                    clubs.last.idClub)
-                                                  Icon(
-                                                    Icons.check,
-                                                    color: Theme.of(context)
-                                                        .colorScheme
-                                                        .primary,
-                                                  ),
-                                              ],
-                                            ),
-                                            onTap: () {
-                                              ref
-                                                  .read(clubIdSelectedProvider
-                                                      .notifier)
-                                                  .state = clubs.last.idClub;
-                                              ref
-                                                  .read(filteredMembersProvider
-                                                      .notifier)
-                                                  .filterMembers(
-                                                      clubId: clubs.last.idClub,
-                                                      cardState:
-                                                          cardStateSelected
-                                                              .state);
-                                              Navigator.pop(context);
-                                            },
-                                          ),
                                         ),
                                       ),
-                                    ],
-                                  ),
-                                ),
-                              ),
-                            );
-                          },
-                        );
-                      },
-                    ),
-                  ),
+                                    ),
+                                  );
+                                },
+                              );
+                            },
+                          ),
+                        )
+                      : Container(),
                 ],
               ),
             ),

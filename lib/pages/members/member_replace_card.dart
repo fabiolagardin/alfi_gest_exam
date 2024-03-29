@@ -30,6 +30,7 @@ class MemberReplaceCardState extends ConsumerState<MemberReplaceCard> {
 
     return Scaffold(
       appBar: AppBar(
+        toolbarHeight: 70,
         leading: Padding(
           padding: const EdgeInsets.fromLTRB(0, 18, 0, 0),
           child: IconButton(
@@ -70,6 +71,21 @@ class MemberReplaceCardState extends ConsumerState<MemberReplaceCard> {
                         fillColor: Theme.of(context).colorScheme.surfaceVariant,
                         filled: true,
                         border: InputBorder.none,
+                        focusedBorder: UnderlineInputBorder(
+                          borderSide: BorderSide(
+                              color: Theme.of(context).colorScheme.primary),
+                        ),
+                        errorBorder: UnderlineInputBorder(
+                          borderSide: BorderSide(
+                              color: Theme.of(context).colorScheme.error),
+                        ),
+                        focusedErrorBorder: UnderlineInputBorder(
+                          borderSide: BorderSide(
+                              color: Theme.of(context).colorScheme.error),
+                        ),
+                        labelStyle: TextStyle(
+                          color: Theme.of(context).colorScheme.secondary,
+                        ),
                       ),
                       style: Theme.of(context).textTheme.bodyMedium!.copyWith(
                             color: Theme.of(context).colorScheme.secondary,
@@ -84,11 +100,21 @@ class MemberReplaceCardState extends ConsumerState<MemberReplaceCard> {
                           // member.numberCard = newCardNumerValidate.data!; quando si vorrà implementare la generazione automatica del numero tessera
                           ref.read(isLoadingProvider.notifier).state = false;
                           final snackBar = SnackBar(
+                              backgroundColor:
+                                  Theme.of(context).colorScheme.errorContainer,
                               shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(4),
                               ),
-                              content: Text(newCardNumerValidate.message ??
-                                  'Si è verificato un errore sconosciuto.'),
+                              content: Text(
+                                  newCardNumerValidate.message ??
+                                      'Si è verificato un errore sconosciuto.',
+                                  style: Theme.of(context)
+                                      .textTheme
+                                      .bodyMedium!
+                                      .copyWith(
+                                          color: Theme.of(context)
+                                              .colorScheme
+                                              .onTertiary)),
                               behavior: SnackBarBehavior.floating);
                           sm.showSnackBar(snackBar);
                         }
@@ -274,19 +300,43 @@ class MemberReplaceCardState extends ConsumerState<MemberReplaceCard> {
                                   if (result.valid) {
                                     ScaffoldMessenger.of(context).showSnackBar(
                                       SnackBar(
-                                        shape: RoundedRectangleBorder(
-                                          borderRadius:
-                                              BorderRadius.circular(4),
-                                        ),
-                                        content: Text(
-                                            "Carta sostituita con successo!"),
-                                      ),
+                                          backgroundColor: Theme.of(context)
+                                              .colorScheme
+                                              .primary,
+                                          shape: RoundedRectangleBorder(
+                                            borderRadius:
+                                                BorderRadius.circular(4),
+                                          ),
+                                          content: Text(
+                                              "Carta sostituita con successo!",
+                                              style: Theme.of(context)
+                                                  .textTheme
+                                                  .bodyMedium!
+                                                  .copyWith(
+                                                      color: Theme.of(context)
+                                                          .colorScheme
+                                                          .onPrimary)),
+                                          behavior: SnackBarBehavior.floating),
                                     );
                                   } else {
                                     ScaffoldMessenger.of(context).showSnackBar(
                                       SnackBar(
-                                        content: Text(result.error!),
-                                      ),
+                                          backgroundColor: Theme.of(context)
+                                              .colorScheme
+                                              .errorContainer,
+                                          shape: RoundedRectangleBorder(
+                                            borderRadius:
+                                                BorderRadius.circular(4),
+                                          ),
+                                          content: Text(result.error!,
+                                              style: Theme.of(context)
+                                                  .textTheme
+                                                  .bodyMedium!
+                                                  .copyWith(
+                                                      color: Theme.of(context)
+                                                          .colorScheme
+                                                          .onTertiary)),
+                                          behavior: SnackBarBehavior.floating),
                                     );
                                   }
                                 },

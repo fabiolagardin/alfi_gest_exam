@@ -1,5 +1,6 @@
 import 'package:alfi_gest/models/enums.dart';
 import 'package:alfi_gest/models/member.dart';
+import 'package:alfi_gest/models/user_role.dart';
 import 'package:alfi_gest/providers/member/create_member_provider.dart';
 import 'package:alfi_gest/screens/auth/auth.dart';
 import 'package:alfi_gest/services/member_service.dart';
@@ -97,17 +98,23 @@ class RegisterMemberFormState extends ConsumerState<RegisterMemberForm> {
                   onTap: () {
                     ref.read(isRegisterMemberProvider.notifier).state = false;
                   },
-                  child: Row(
-                    children: [
-                      Icon(Icons.chevron_left, size: 32.0),
-                      SizedBox(width: 5),
-                      Text(
-                        'Torna al login',
-                        style: Theme.of(context).textTheme.bodyMedium!.copyWith(
-                              color: Theme.of(context).colorScheme.secondary,
-                            ),
-                      ),
-                    ],
+                  child: Transform.translate(
+                    offset: const Offset(-10.0, 0),
+                    child: Row(
+                      children: [
+                        Icon(Icons.chevron_left, size: 32.0),
+                        SizedBox(width: 5),
+                        Text(
+                          'Torna al login',
+                          style: Theme.of(context)
+                              .textTheme
+                              .bodyMedium!
+                              .copyWith(
+                                color: Theme.of(context).colorScheme.secondary,
+                              ),
+                        ),
+                      ],
+                    ),
                   ),
                 ),
               ],
@@ -194,10 +201,11 @@ class RegisterMemberFormState extends ConsumerState<RegisterMemberForm> {
                               updateUser: "",
                               dateLastRenewal: DateTime.now(),
                               expirationDate: DateTime.now(),
-                              profileImageFile: formState.profileImageFile,
+                              profileImageString: formState.profileImageString,
                               replaceCardMotivation:
                                   formState.replaceCardMotivation,
-                              isSuspended: formState.isSuspended,
+                              isSuspended: true, // nuova socia sospesa
+                              isRejected: false, // nuova socia non rifiutata
                             );
 
                             final validationResult =
@@ -240,16 +248,23 @@ class RegisterMemberFormState extends ConsumerState<RegisterMemberForm> {
                               newMember.memberId = userId;
                               newMember.userCreation = userId;
                               newMember.updateUser = userId;
-
+                              final newRole = UserRole(
+                                idUserRole: userId,
+                                role: Role.socia,
+                                creationDate: DateTime.now(),
+                                userCreation: userId,
+                                updateDate: DateTime.now(),
+                                updateUser: userId,
+                              );
                               final result = await MemberService()
                                   .createMember(userId, newMember);
                               final setRole = await MemberService()
-                                  .setRoleMember(userId, Role.socia);
+                                  .setRoleMember(userId, newRole);
 
                               ref.read(isLoadingProvider.notifier).state =
                                   false;
 
-                              if (result.valid) {
+                              if (result.valid && setRole.valid) {
                                 formState.reset();
                                 ref.read(isSuccessPageProvider.notifier).state =
                                     true;

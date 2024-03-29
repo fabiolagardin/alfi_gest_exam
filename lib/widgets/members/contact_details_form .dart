@@ -22,6 +22,21 @@ class ContactDetailsForm extends ConsumerWidget {
               fillColor: Theme.of(context).colorScheme.surfaceVariant,
               filled: true,
               border: InputBorder.none,
+              focusedBorder: UnderlineInputBorder(
+                borderSide:
+                    BorderSide(color: Theme.of(context).colorScheme.primary),
+              ),
+              errorBorder: UnderlineInputBorder(
+                borderSide:
+                    BorderSide(color: Theme.of(context).colorScheme.error),
+              ),
+              focusedErrorBorder: UnderlineInputBorder(
+                borderSide:
+                    BorderSide(color: Theme.of(context).colorScheme.error),
+              ),
+              labelStyle: TextStyle(
+                color: Theme.of(context).colorScheme.secondary,
+              ),
             ),
             style: Theme.of(context).textTheme.bodyMedium!.copyWith(
                   color: Theme.of(context).colorScheme.secondary,
@@ -43,6 +58,21 @@ class ContactDetailsForm extends ConsumerWidget {
               fillColor: Theme.of(context).colorScheme.surfaceVariant,
               filled: true,
               border: InputBorder.none,
+              focusedBorder: UnderlineInputBorder(
+                borderSide:
+                    BorderSide(color: Theme.of(context).colorScheme.primary),
+              ),
+              errorBorder: UnderlineInputBorder(
+                borderSide:
+                    BorderSide(color: Theme.of(context).colorScheme.error),
+              ),
+              focusedErrorBorder: UnderlineInputBorder(
+                borderSide:
+                    BorderSide(color: Theme.of(context).colorScheme.error),
+              ),
+              labelStyle: TextStyle(
+                color: Theme.of(context).colorScheme.secondary,
+              ),
             ),
             style: Theme.of(context).textTheme.bodyMedium!.copyWith(
                   color: Theme.of(context).colorScheme.secondary,
@@ -66,6 +96,21 @@ class ContactDetailsForm extends ConsumerWidget {
               fillColor: Theme.of(context).colorScheme.surfaceVariant,
               filled: true,
               border: InputBorder.none,
+              focusedBorder: UnderlineInputBorder(
+                borderSide:
+                    BorderSide(color: Theme.of(context).colorScheme.primary),
+              ),
+              errorBorder: UnderlineInputBorder(
+                borderSide:
+                    BorderSide(color: Theme.of(context).colorScheme.error),
+              ),
+              focusedErrorBorder: UnderlineInputBorder(
+                borderSide:
+                    BorderSide(color: Theme.of(context).colorScheme.error),
+              ),
+              labelStyle: TextStyle(
+                color: Theme.of(context).colorScheme.secondary,
+              ),
             ),
             style: Theme.of(context).textTheme.bodyMedium!.copyWith(
                   color: Theme.of(context).colorScheme.secondary,
@@ -105,6 +150,7 @@ class ContactDetailsForm extends ConsumerWidget {
                       .updateConsentWhatsApp(isConsentWhatsApp);
                 },
               ),
+              SizedBox(width: 10),
               Text(
                 'Whatsapp',
                 style: Theme.of(context).textTheme.bodyMedium!.copyWith(
@@ -125,6 +171,7 @@ class ContactDetailsForm extends ConsumerWidget {
                       .updateConsentNewsletter(isConsentNewsletter);
                 },
               ),
+              SizedBox(width: 10),
               Text(
                 'Newsletter',
                 style: Theme.of(context).textTheme.bodyMedium!.copyWith(

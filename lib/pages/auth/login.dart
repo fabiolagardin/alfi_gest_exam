@@ -17,7 +17,7 @@ class LoginPageState extends ConsumerState<LoginPage> {
   @override
   Widget build(BuildContext context) {
     final authController = ref.watch(authProvider.notifier);
-    final authControllerState = ref.read(authProvider.notifier).state;
+    final authControllerState = ref.read(authProvider.notifier);
     ValueNotifier<bool> rememberMe =
         ValueNotifier<bool>(authControllerState.rememberMe);
     emailController.text = authControllerState.email;
@@ -144,8 +144,7 @@ class LoginPageState extends ConsumerState<LoginPage> {
                             ref
                                 .read(authProvider.notifier)
                                 .updatePassword(passwordController.text);
-                            authControllerState.rememberMe = newValue!;
-                            authController.updateRememberMe(newValue);
+                            authController.updateRememberMe(newValue ?? false);
                           },
                         ),
                       ),
@@ -161,20 +160,23 @@ class LoginPageState extends ConsumerState<LoginPage> {
                 },
               ),
               const Spacer(), // Spinge il testo "Password dimenticata?" a destra
-              TextButton(
-                onPressed: () {
-                  ref.read(isResetPasswordPage.notifier).state = true;
-                },
-                child: Text(
-                  'Password dimenticata?',
-                  style: TextStyle(
-                      decoration: TextDecoration.underline,
-                      fontSize:
-                          Theme.of(context).textTheme.labelMedium!.fontSize,
-                      color: Theme.of(context).colorScheme.onSurfaceVariant,
-                      decorationColor:
-                          Theme.of(context).colorScheme.onSurfaceVariant,
-                      height: 1.5),
+              Transform.translate(
+                offset: const Offset(10.0, 0),
+                child: TextButton(
+                  onPressed: () {
+                    ref.read(isResetPasswordPage.notifier).state = true;
+                  },
+                  child: Text(
+                    'Password dimenticata?',
+                    style: TextStyle(
+                        decoration: TextDecoration.underline,
+                        fontSize:
+                            Theme.of(context).textTheme.labelMedium!.fontSize,
+                        color: Theme.of(context).colorScheme.onSurfaceVariant,
+                        decorationColor:
+                            Theme.of(context).colorScheme.onSurfaceVariant,
+                        height: 1.5),
+                  ),
                 ),
               ),
             ],
@@ -192,8 +194,8 @@ class LoginPageState extends ConsumerState<LoginPage> {
                   ref
                       .read(authProvider.notifier)
                       .updatePassword(passwordController.text);
-                  final email = authController.state.email;
-                  final password = authController.state.password;
+                  final email = authController.email;
+                  final password = authController.password;
                   final formState = formKey.currentState;
                   final formValid = formKey.currentState!.validate();
                   if (!formValid) {
@@ -210,17 +212,20 @@ class LoginPageState extends ConsumerState<LoginPage> {
                     if (result.error != null) {
                       scaffoldMessenger.showSnackBar(
                         SnackBar(
+                            backgroundColor: Color(0xFF8C1D18),
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(4),
                             ),
-                            content: Text(
-                              'Errore durante l\'autenticazione ${result.error}',
-                              style: TextStyle(
-                                color: Colors
-                                    .white, // Cambia il colore del testo qui
-                              ),
-                            ),
-                            backgroundColor: Color(0xFF8C1D18),
+                            content: Text('${result.error}',
+                                style: Theme.of(context)
+                                    .textTheme
+                                    .bodyMedium!
+                                    .copyWith(
+                                        color: Theme.of(context)
+                                            .colorScheme
+                                            .onTertiary) // Cambia il colore del testo qui
+
+                                ),
                             behavior: SnackBarBehavior.floating),
                       );
                     }

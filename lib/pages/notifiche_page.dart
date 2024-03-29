@@ -1,61 +1,154 @@
-import 'package:alfi_gest/models/enums.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-
-import 'package:alfi_gest/providers/member/member_data_provider.dart';
-import 'package:alfi_gest/providers/member/member_role_provider.dart';
 
 class NotifichePage extends ConsumerWidget {
   const NotifichePage({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final memberData = ref.watch(memberProvider);
-    final memberRole = ref.watch(roleProvider);
-    String pronuon = "";
-    if (memberData == null) {
-      // Gestisci il caso in cui _memberData è null
-    } else if (memberData.pronoun == Pronoun.lei) {
-      pronuon = "a";
-    } else if (memberData.pronoun == Pronoun.lui) {
-      pronuon = "o";
-    } else {
-      pronuon = "*";
-    }
-    return SingleChildScrollView(
-      child: Center(
-        child: Column(
-          children: [
-            memberData == null
-                ? Container()
-                : Padding(
-                    padding: const EdgeInsets.fromLTRB(0, 53, 0, 8),
-                    child: Container(
-                      width: 34.65,
-                      height: 34.65,
-                      decoration: BoxDecoration(
-                        color: Theme.of(context).colorScheme.secondary,
-                        borderRadius: BorderRadius.circular(10),
+    return Container(
+      padding: EdgeInsets.symmetric(vertical: 25.0, horizontal: 20.0),
+      child: SingleChildScrollView(
+        child: Center(
+          child: Column(
+            children: [
+              Card(
+                color: Theme.of(context)
+                    .colorScheme
+                    .surfaceVariant, // Colore di sfondo della card
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10.0),
+                ),
+                child: Padding(
+                  padding:
+                      EdgeInsets.symmetric(vertical: 12.0, horizontal: 12.0),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        children: [
+                          Icon(Icons.settings_outlined,
+                              color: Theme.of(context).colorScheme.secondary),
+                          SizedBox(width: 10),
+                          Flexible(
+                            // Utilizza Flexible per consentire al testo di andare a capo
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  'Nuova socia*', // Testo più corto
+                                  style: Theme.of(context)
+                                      .textTheme
+                                      .titleMedium!
+                                      .copyWith(
+                                        color: Theme.of(context)
+                                            .colorScheme
+                                            .secondary,
+                                      ),
+                                ),
+                                Text(
+                                  'Aggiunta socia* Fabiola Gradin al circolo Alfi Lune', // Testo più lungo
+                                  style: Theme.of(context)
+                                      .textTheme
+                                      .bodyMedium!
+                                      .copyWith(
+                                        color: Theme.of(context)
+                                            .colorScheme
+                                            .secondary,
+                                      ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ],
                       ),
-                    ),
+                      SizedBox(height: 10),
+                      Align(
+                        alignment: Alignment.centerRight,
+                        child: Text(
+                          '6 nov 2023, 2:10 PM',
+                          style: Theme.of(context)
+                              .textTheme
+                              .bodyMedium!
+                              .copyWith(
+                                color: Theme.of(context).colorScheme.secondary,
+                              ),
+                        ),
+                      ),
+                    ],
                   ),
-            Padding(
-              padding: const EdgeInsets.all(8),
-              child: memberData != null
-                  ? Text(
-                      "Ciao, ${memberData.legalName}!",
-                      style: Theme.of(context).textTheme.headlineLarge,
-                    )
-                  : const Text("Ciao!"),
-            ),
-            Padding(
-              padding: const EdgeInsets.all(8),
-              child: Text(
-                "Notifice PAGE.",
-                style: Theme.of(context).textTheme.bodyLarge,
+                ),
               ),
-            ),
-          ],
+              SizedBox(height: 10),
+              Card(
+                color: Theme.of(context)
+                    .colorScheme
+                    .surfaceVariant, // Colore di sfondo della card
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10.0),
+                ),
+                child: Padding(
+                  padding:
+                      EdgeInsets.symmetric(vertical: 12.0, horizontal: 12.0),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        children: [
+                          Icon(Icons.warning_outlined,
+                              color: Theme.of(context).colorScheme.secondary),
+                          SizedBox(width: 10),
+                          Flexible(
+                            // Utilizza Flexible per consentire al testo di andare a capo
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  'Scadenza tessere', // Testo più corto
+                                  style: Theme.of(context)
+                                      .textTheme
+                                      .titleMedium!
+                                      .copyWith(
+                                        color: Theme.of(context)
+                                            .colorScheme
+                                            .secondary,
+                                      ),
+                                ),
+                                Text(
+                                  'Le tessere scadranno tra 1 mese', // Testo più lungo
+                                  style: Theme.of(context)
+                                      .textTheme
+                                      .bodyMedium!
+                                      .copyWith(
+                                        color: Theme.of(context)
+                                            .colorScheme
+                                            .secondary,
+                                      ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ],
+                      ),
+                      SizedBox(height: 10),
+                      Align(
+                        alignment: Alignment.centerRight,
+                        child: Text(
+                          '6 nov 2023, 2:10 PM',
+                          style: Theme.of(context)
+                              .textTheme
+                              .bodyMedium!
+                              .copyWith(
+                                color: Theme.of(context).colorScheme.secondary,
+                              ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );

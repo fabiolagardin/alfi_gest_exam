@@ -21,11 +21,10 @@ class PersonalDetailsForm extends ConsumerWidget {
 
     // Controller with desired date format
     // Update the controller only if formState.birthDate changes and is not null
-    if (formState.birthDate != null &&
-        DateFormat('dd-MM-yyyy').format(formState.birthDate!) !=
-            dateController.text) {
+    if (DateFormat('dd-MM-yyyy').format(formState.birthDate) !=
+        dateController.text) {
       dateController.text =
-          DateFormat('dd-MM-yyyy').format(formState.birthDate!);
+          DateFormat('dd-MM-yyyy').format(formState.birthDate);
     }
 
     // Update the pronounController text based on the selected pronoun
@@ -46,6 +45,21 @@ class PersonalDetailsForm extends ConsumerWidget {
               fillColor: Theme.of(context).colorScheme.surfaceVariant,
               filled: true,
               border: InputBorder.none,
+              focusedBorder: UnderlineInputBorder(
+                borderSide:
+                    BorderSide(color: Theme.of(context).colorScheme.primary),
+              ),
+              errorBorder: UnderlineInputBorder(
+                borderSide:
+                    BorderSide(color: Theme.of(context).colorScheme.error),
+              ),
+              focusedErrorBorder: UnderlineInputBorder(
+                borderSide:
+                    BorderSide(color: Theme.of(context).colorScheme.error),
+              ),
+              labelStyle: TextStyle(
+                color: Theme.of(context).colorScheme.secondary,
+              ),
             ),
             style: Theme.of(context).textTheme.bodyMedium!.copyWith(
                   color: Theme.of(context).colorScheme.secondary,
@@ -73,6 +87,21 @@ class PersonalDetailsForm extends ConsumerWidget {
               fillColor: Theme.of(context).colorScheme.surfaceVariant,
               filled: true,
               border: InputBorder.none,
+              focusedBorder: UnderlineInputBorder(
+                borderSide:
+                    BorderSide(color: Theme.of(context).colorScheme.primary),
+              ),
+              errorBorder: UnderlineInputBorder(
+                borderSide:
+                    BorderSide(color: Theme.of(context).colorScheme.error),
+              ),
+              focusedErrorBorder: UnderlineInputBorder(
+                borderSide:
+                    BorderSide(color: Theme.of(context).colorScheme.error),
+              ),
+              labelStyle: TextStyle(
+                color: Theme.of(context).colorScheme.secondary,
+              ),
             ),
             style: Theme.of(context).textTheme.bodyMedium,
             keyboardType: TextInputType.name,
@@ -93,6 +122,21 @@ class PersonalDetailsForm extends ConsumerWidget {
               fillColor: Theme.of(context).colorScheme.surfaceVariant,
               filled: true,
               border: InputBorder.none,
+              focusedBorder: UnderlineInputBorder(
+                borderSide:
+                    BorderSide(color: Theme.of(context).colorScheme.primary),
+              ),
+              errorBorder: UnderlineInputBorder(
+                borderSide:
+                    BorderSide(color: Theme.of(context).colorScheme.error),
+              ),
+              focusedErrorBorder: UnderlineInputBorder(
+                borderSide:
+                    BorderSide(color: Theme.of(context).colorScheme.error),
+              ),
+              labelStyle: TextStyle(
+                color: Theme.of(context).colorScheme.secondary,
+              ),
             ),
             style: Theme.of(context).textTheme.bodyMedium!.copyWith(
                   color: Theme.of(context).colorScheme.secondary,
@@ -221,12 +265,15 @@ class PersonalDetailsForm extends ConsumerWidget {
                   Icons.arrow_drop_down,
                   color: Theme.of(context).iconTheme.color?.withOpacity(1.0),
                 ),
+               
+                errorBorder: UnderlineInputBorder(
+                  borderSide:
+                      BorderSide(color: Theme.of(context).colorScheme.error),
+                ),
+                
                 labelStyle: TextStyle(
                   color:
                       Theme.of(context).colorScheme.secondary.withOpacity(1.0),
-                  fontWeight:
-                      Theme.of(context).textTheme.bodyMedium?.fontWeight,
-                  fontSize: Theme.of(context).textTheme.bodyMedium?.fontSize,
                 ),
                 fillColor: Theme.of(context)
                     .colorScheme
@@ -241,14 +288,24 @@ class PersonalDetailsForm extends ConsumerWidget {
           ),
           const SizedBox(height: 13),
           TextFormField(
-            initialValue: DateFormat('dd-MM-yyyy').format(formState.birthDate),
+            controller: dateController,
             decoration: InputDecoration(
               labelText: 'Data di nascita *',
               fillColor: Theme.of(context).colorScheme.surfaceVariant,
               filled: true,
               border: InputBorder.none,
               suffixIcon: const Icon(Icons.calendar_today),
+             
+              errorBorder: UnderlineInputBorder(
+                borderSide:
+                    BorderSide(color: Theme.of(context).colorScheme.error),
+              ),
+            
+              labelStyle: TextStyle(
+                color: Theme.of(context).colorScheme.secondary.withOpacity(1.0),
+              ),
             ),
+
             readOnly: true, // Prevents manually typing the date
             onTap: () async {
               DateTime? pickedDate = await showDatePicker(
@@ -259,6 +316,8 @@ class PersonalDetailsForm extends ConsumerWidget {
                 locale: Locale('it', 'IT'),
               );
               if (pickedDate != null) {
+                formState.birthDate = pickedDate;
+
                 // Update the provider state with the new birth date
                 ref
                     .read(createMemberFormProvider.notifier)
@@ -286,10 +345,25 @@ class PersonalDetailsForm extends ConsumerWidget {
           TextFormField(
             initialValue: formState.taxIdCode.toUpperCase(),
             decoration: InputDecoration(
-              labelText: 'Codice fiscale',
+              labelText: 'Codice fiscale *',
               fillColor: Theme.of(context).colorScheme.surfaceVariant,
               filled: true,
               border: InputBorder.none,
+              focusedBorder: UnderlineInputBorder(
+                borderSide:
+                    BorderSide(color: Theme.of(context).colorScheme.primary),
+              ),
+              errorBorder: UnderlineInputBorder(
+                borderSide:
+                    BorderSide(color: Theme.of(context).colorScheme.error),
+              ),
+              focusedErrorBorder: UnderlineInputBorder(
+                borderSide:
+                    BorderSide(color: Theme.of(context).colorScheme.error),
+              ),
+              labelStyle: TextStyle(
+                color: Theme.of(context).colorScheme.secondary,
+              ),
             ),
             style: Theme.of(context).textTheme.bodyMedium!.copyWith(
                   color: Theme.of(context).colorScheme.secondary,
@@ -426,12 +500,15 @@ class PersonalDetailsForm extends ConsumerWidget {
                   Icons.arrow_drop_down,
                   color: Theme.of(context).iconTheme.color?.withOpacity(1.0),
                 ),
+              
+                errorBorder: UnderlineInputBorder(
+                  borderSide:
+                      BorderSide(color: Theme.of(context).colorScheme.error),
+                ),
+          
                 labelStyle: TextStyle(
                   color:
                       Theme.of(context).colorScheme.secondary.withOpacity(1.0),
-                  fontWeight:
-                      Theme.of(context).textTheme.bodyMedium?.fontWeight,
-                  fontSize: Theme.of(context).textTheme.bodyMedium?.fontSize,
                 ),
                 fillColor: Theme.of(context)
                     .colorScheme
@@ -442,12 +519,6 @@ class PersonalDetailsForm extends ConsumerWidget {
               style: Theme.of(context).textTheme.bodyMedium!.copyWith(
                     color: Theme.of(context).colorScheme.secondary,
                   ),
-              validator: (value) {
-                if (value == '') {
-                  return 'Campo obbligatorio!';
-                }
-                return null;
-              },
             ),
           ),
           const SizedBox(height: 13),
@@ -458,6 +529,21 @@ class PersonalDetailsForm extends ConsumerWidget {
               fillColor: Theme.of(context).colorScheme.surfaceVariant,
               filled: true,
               border: InputBorder.none,
+              focusedBorder: UnderlineInputBorder(
+                borderSide:
+                    BorderSide(color: Theme.of(context).colorScheme.primary),
+              ),
+              errorBorder: UnderlineInputBorder(
+                borderSide:
+                    BorderSide(color: Theme.of(context).colorScheme.error),
+              ),
+              focusedErrorBorder: UnderlineInputBorder(
+                borderSide:
+                    BorderSide(color: Theme.of(context).colorScheme.error),
+              ),
+              labelStyle: TextStyle(
+                color: Theme.of(context).colorScheme.secondary,
+              ),
             ),
             style: Theme.of(context).textTheme.bodyMedium!.copyWith(
                   color: Theme.of(context).colorScheme.secondary,

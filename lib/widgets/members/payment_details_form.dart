@@ -61,6 +61,21 @@ class PaymentDetailsForm extends ConsumerWidget {
                                 Theme.of(context).colorScheme.surfaceVariant,
                             filled: true,
                             border: InputBorder.none,
+                            focusedBorder: UnderlineInputBorder(
+                              borderSide: BorderSide(
+                                  color: Theme.of(context).colorScheme.primary),
+                            ),
+                            errorBorder: UnderlineInputBorder(
+                              borderSide: BorderSide(
+                                  color: Theme.of(context).colorScheme.error),
+                            ),
+                            focusedErrorBorder: UnderlineInputBorder(
+                              borderSide: BorderSide(
+                                  color: Theme.of(context).colorScheme.error),
+                            ),
+                            labelStyle: TextStyle(
+                              color: Theme.of(context).colorScheme.secondary,
+                            ),
                           ),
                           style: Theme.of(context).textTheme.bodyMedium,
 
@@ -83,6 +98,21 @@ class PaymentDetailsForm extends ConsumerWidget {
                                 Theme.of(context).colorScheme.surfaceVariant,
                             filled: true,
                             border: InputBorder.none,
+                            focusedBorder: UnderlineInputBorder(
+                              borderSide: BorderSide(
+                                  color: Theme.of(context).colorScheme.primary),
+                            ),
+                            errorBorder: UnderlineInputBorder(
+                              borderSide: BorderSide(
+                                  color: Theme.of(context).colorScheme.error),
+                            ),
+                            focusedErrorBorder: UnderlineInputBorder(
+                              borderSide: BorderSide(
+                                  color: Theme.of(context).colorScheme.error),
+                            ),
+                            labelStyle: TextStyle(
+                              color: Theme.of(context).colorScheme.secondary,
+                            ),
                             suffixIcon: Padding(
                               padding: const EdgeInsets.all(
                                   12.0), // Aggiusta lo spazio come necessario
@@ -110,17 +140,29 @@ class PaymentDetailsForm extends ConsumerWidget {
                         const SizedBox(height: 10),
                         Row(
                           children: [
-                            Expanded(
+                            Flexible(
                               child: TextFormField(
                                 controller: dateController,
                                 decoration: InputDecoration(
-                                  labelText: 'Data di scadenza',
+                                  labelText: 'Scadenza',
                                   fillColor: Theme.of(context)
                                       .colorScheme
                                       .surfaceVariant,
                                   filled: true,
                                   border: InputBorder.none,
                                   suffixIcon: const Icon(Icons.calendar_today),
+                                  errorBorder: UnderlineInputBorder(
+                                    borderSide: BorderSide(
+                                        color: Theme.of(context)
+                                            .colorScheme
+                                            .error),
+                                  ),
+                                  labelStyle: TextStyle(
+                                    color: Theme.of(context)
+                                        .colorScheme
+                                        .secondary
+                                        .withOpacity(1.0),
+                                  ),
                                 ),
                                 readOnly:
                                     true, // Impedisce la digitazione manuale della data
@@ -172,6 +214,28 @@ class PaymentDetailsForm extends ConsumerWidget {
                                         12.0), // Aggiusta lo spazio come necessario
                                     child: Icon(Icons.credit_card_outlined),
                                   ),
+                                  focusedBorder: UnderlineInputBorder(
+                                    borderSide: BorderSide(
+                                        color: Theme.of(context)
+                                            .colorScheme
+                                            .primary),
+                                  ),
+                                  errorBorder: UnderlineInputBorder(
+                                    borderSide: BorderSide(
+                                        color: Theme.of(context)
+                                            .colorScheme
+                                            .error),
+                                  ),
+                                  focusedErrorBorder: UnderlineInputBorder(
+                                    borderSide: BorderSide(
+                                        color: Theme.of(context)
+                                            .colorScheme
+                                            .error),
+                                  ),
+                                  labelStyle: TextStyle(
+                                    color:
+                                        Theme.of(context).colorScheme.secondary,
+                                  ),
                                 ),
                                 style: Theme.of(context).textTheme.bodyMedium,
 
@@ -197,8 +261,7 @@ class PaymentDetailsForm extends ConsumerWidget {
                     // Secondo tab: PayPal
                     Column(
                       children: [
-                        const SizedBox(height: 10),
-
+                        const SizedBox(height: 13),
                         TextFormField(
                           initialValue: formState.paypalEmail,
                           decoration: InputDecoration(
@@ -214,6 +277,12 @@ class PaymentDetailsForm extends ConsumerWidget {
                                   'assets/images/Paypal.png'), // Assicurati che il percorso dell'immagine sia corretto
                             ),
                           ),
+                          style: Theme.of(context)
+                              .textTheme
+                              .bodyMedium!
+                              .copyWith(
+                                color: Theme.of(context).colorScheme.secondary,
+                              ),
                           keyboardType: TextInputType.emailAddress,
 
                           onChanged: (value) {

@@ -1,4 +1,6 @@
+import 'package:alfi_gest/models/club.dart';
 import 'package:alfi_gest/models/enums.dart';
+import 'package:alfi_gest/models/member.dart';
 
 class StringHelper {
   static String splitOnCaps(String input) {
@@ -60,7 +62,7 @@ String displayStringForTypeDocument(TypeDocument typeDocument) {
 String formatRole(Role role) {
   switch (role) {
     case Role.nonAssegnato:
-      return "Non assegnato";
+      return "";
     case Role.amministratore:
       return "Amministratore";
     case Role.segretariaNazionale:
@@ -68,9 +70,24 @@ String formatRole(Role role) {
     case Role.responsabileCircolo:
       return "Responsabile Circolo";
     case Role.socia:
-      return "Socia";
+      return "Socia*";
     default:
       return "";
+  }
+}
+
+Role parseRole(String role) {
+  switch (role) {
+    case "Amministratore":
+      return Role.amministratore;
+    case "Segretaria Nazionale":
+      return Role.segretariaNazionale;
+    case "Responsabile Circolo":
+      return Role.responsabileCircolo;
+    case "Socia":
+      return Role.socia;
+    default:
+      return Role.nonAssegnato;
   }
 }
 
@@ -81,6 +98,35 @@ String displayStringForReplaceCardMotivation(ReplaceCardMotivation motivation) {
       return "Smarrimento";
     case ReplaceCardMotivation.rottura:
       return "Rottura";
+    default:
+      return "";
+  }
+}
+
+String formatMemberName(Member member) {
+  return member.givenName.isEmpty
+      ? "${member.legalName} ${member.lastName}"
+      : "${member.givenName} ${member.lastName}";
+}
+
+String getClubName(Member member, List<Club> clubs) {
+  for (Club club in clubs) {
+    if (club.id == member.idClub) {
+      return club.nameClub;
+    }
+  }
+  return 'Senza Circolo';
+}
+
+// Funzione helper per ottenere la stringa visualizzata per ogni valore di BookType
+String displayStringForBookType(BookType bookType) {
+  switch (bookType) {
+    case BookType.libroSocie:
+      return "Libro socie*";
+    case BookType.libroSocieVolontarie:
+      return "Libro socie* volontarie";
+    case BookType.libroSocieLavoratrici:
+      return "Libro socie* lavoratrici";
     default:
       return "";
   }

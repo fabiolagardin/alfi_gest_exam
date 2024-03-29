@@ -50,7 +50,7 @@ dependencies:
   cloud_functions: 4.6.5
   bottom_picker: ^2.4.0
   app_settings: ^5.1.1
-  
+  firebase_storage: ^11.6.6
 dev_dependencies:
   flutter_test:
     sdk: flutter
@@ -120,7 +120,13 @@ flutter:
   # For details regarding fonts from package dependencies,
   # see https://flutter.dev/custom-fonts/#from-packages
 
-flutter_native_splash:
-  image: "assets/images/logo-light.png"
-  color: "ffffff"
 
+# se modifico la splash page lancio il comando
+# flutter pub run flutter_native_splash:create
+
+flutter_native_splash:
+  color: "#FFFFFF"  # Colore di sfondo della splash screen (opzionale)
+  image: assets/images/logo-light.png  # Percorso dell'immagine di splash
+  image_dark: assets/images/logo-light.png  # Percorso dell'immagine di splash per tema scuro (opzionale)
+  android: true  # Abilita la generazione per Android (default: true)
+  ios: true  # Abilita la generazione per iOS (default: true)

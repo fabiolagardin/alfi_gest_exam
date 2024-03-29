@@ -22,11 +22,13 @@ void main() async {
   );
 
   // Carica lo stato di 'rememberMe'
-  final authControllerState = AuthControllerState();
+  final container = ProviderContainer();
+  final authControllerState = container.read(authProvider.notifier);
   await authControllerState.loadRememberMe();
-  AuthControllerState().updateRememberMe(authControllerState.state.rememberMe);
+  authControllerState.updateRememberMe(authControllerState.rememberMe);
+
 // Se rememberMe è false, esegui il logout
-  if (!authControllerState.state.rememberMe) {
+  if (!authControllerState.rememberMe) {
     await FirebaseAuth.instance.signOut();
   }
 

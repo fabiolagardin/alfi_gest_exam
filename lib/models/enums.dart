@@ -24,6 +24,7 @@ enum Role {
 }
 
 enum TypeSendNotifications {
+  nonAssegnato,
   email,
   notifica,
   emailENotifica,
@@ -40,4 +41,12 @@ enum ReplaceCardMotivation {
   nonAssegnato,
   smarrimento,
   rottura,
+  nuovaEmissione,
+}
+
+enum BookType {
+  nonAssegnato,
+  libroSocie,
+  libroSocieVolontarie,
+  libroSocieLavoratrici,
 }

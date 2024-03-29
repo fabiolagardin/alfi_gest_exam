@@ -30,7 +30,7 @@ const _shadowLight = Color(0xFF000000);
 const _scrimLight = Color(0xFF000000);
 const _inverseSurfaceLight = Color(0xFF322F35);
 const _onInverseSurfaceLight = Color(0xFFF5EFF7);
-const _inversePrimaryLight = Color(0xFFD0BCFF);
+const _inversePrimaryLight = Color(0xFFFC3A8FF);
 
 // Definisci il tema chiaro
 final ThemeData lightTheme = ThemeData(
@@ -96,7 +96,7 @@ final ThemeData lightTheme = ThemeData(
 );
 
 // Definisci i colori per il tema scuro
-const _primaryDark = Color(0xFFD0BCFE);
+const _primaryDark = Color(0xFFC3A8FF);
 const _onPrimaryDark = Color(0xFF381E72);
 const _primaryContainerDark = Color(0xFF4F378B);
 const _onPrimaryContainerDark = Color(0xFFEADDFF);
@@ -116,7 +116,7 @@ const _backgroundDark = Color(0xFF2B2930);
 const _onBackgroundDark = Color(0xFFE6E0E9);
 const _surfaceDark = Color(0xFF141218);
 const _onSurfaceDark = Color(0xFFE6E0E9);
-const _surfaceVariantDark = Color(0xFF49454F);
+const _surfaceVariantDark = Color(0xFF413E46);
 const _onSurfaceVariantDark = Color(0xFFCAC4D0);
 const _outlineDark = Color(0xFF938F99);
 const _outlineVariantDark = Color(0xFF49454F);
